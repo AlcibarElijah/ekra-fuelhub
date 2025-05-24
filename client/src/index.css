@@ -5,3 +5,16 @@
 .mt-10-x {
   margin-top: 10px;
 }
+
+.title-case {
+  text-transform: capitalize;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
+

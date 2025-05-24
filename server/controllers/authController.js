@@ -29,7 +29,7 @@ module.exports.login = async (req, res) => {
         message: "Please fill in all the fields."
       })
 
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username }).populate("role");
     if (!user)
       return res.status(400).json({
         message: "User with this username does not exist."
