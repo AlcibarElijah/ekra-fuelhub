@@ -4,7 +4,8 @@
 const ENVIRONMENT = process.env.REACT_APP_ENVIRONMENT;
 const DEVELOPMENT_URL = process.env.REACT_APP_API_URL_DEVELOPMENT;
 const PRODUCTION_URL = process.env.REACT_APP_API_URL_PRODUCTION;
-const API_URL = ENVIRONMENT === "development" ? DEVELOPMENT_URL : PRODUCTION_URL;
+const API_URL =
+  ENVIRONMENT === "development" ? DEVELOPMENT_URL : PRODUCTION_URL;
 
 const rest = {
   getToken: () => {
@@ -16,13 +17,13 @@ const rest = {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
+      credentials: "include",
     });
     const data = await response.json();
 
-    if (!response.ok)
-      throw new Error(data.message);
+    if (!response.ok) throw new Error(data.message);
 
     return data;
   },
@@ -32,14 +33,14 @@ const rest = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(body)
-    })
+      body: JSON.stringify(body),
+      credentials: "include",
+    });
     const data = await response.json();
 
-    if (!response.ok)
-      throw new Error(data.message);
+    if (!response.ok) throw new Error(data.message);
 
     return data;
   },
@@ -49,14 +50,14 @@ const rest = {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(body)
-    })
+      body: JSON.stringify(body),
+      credentials: "include",
+    });
     const data = await response.json();
 
-    if (!response.ok)
-      throw new Error(data.message);
+    if (!response.ok) throw new Error(data.message);
 
     return data;
   },
@@ -66,16 +67,16 @@ const rest = {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      }
-    })
+        Authorization: `Bearer ${token}`,
+      },
+      credentials: "include",
+    });
     const data = await response.json();
 
-    if (!response.ok)
-      throw new Error(data.message);
+    if (!response.ok) throw new Error(data.message);
 
     return data;
   },
-}
+};
 
 export default rest;

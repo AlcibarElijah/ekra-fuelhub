@@ -12,26 +12,26 @@ const Role = require("../models/Role");
 /* -------------------------------------------------------------------------- */
 const getUserFromToken = async (token) => {
   const userId = jwt.verify(token, process.env.JWT_SECRET);
-  return await User.findById(userId);
-}
+  return await User.findById(userId).populate("role");
+};
 
 const getTokenFromRequest = (req) => {
   const authHeader = req.headers.authorization;
   if (!authHeader)
     throw {
       statusCode: 401,
-      message: "Please provide a token in the authorization header."
-    }
+      message: "Please provide a token in the authorization header.",
+    };
 
   const token = authHeader.split(" ")[1];
   if (!token)
     throw {
       statusCode: 401,
-      message: "Please provide a token in the authorization header."
-    }
-  
+      message: "Please provide a token in the authorization header.",
+    };
+
   return token;
-}
+};
 
 /* -------------------------------------------------------------------------- */
 /*                                 middleware                                 */
@@ -44,16 +44,18 @@ module.exports.isUserAuthenticated = async (req, res, next) => {
     if (!user)
       throw {
         statusCode: 401,
-        message: "User not found."
-      }
+        message: "User not found.",
+      };
+
+    req.user = user;
 
     next();
   } catch (error) {
     res.status(error.statusCode || 500).json({
-      message: error.message
-    })
+      message: error.message,
+    });
   }
-}
+};
 
 module.exports.isUserNotAuthenticated = async (req, res, next) => {
   try {
@@ -63,16 +65,16 @@ module.exports.isUserNotAuthenticated = async (req, res, next) => {
     if (!user)
       throw {
         statusCode: 401,
-        message: "User not found."
-      }
+        message: "User not found.",
+      };
 
     res.status(400).json({
-      message: "User already logged in."
-    })
+      message: "User already logged in.",
+    });
   } catch (error) {
     next();
   }
-}
+};
 
 module.exports.isUserAdmin = async (req, res, next) => {
   try {
@@ -82,20 +84,22 @@ module.exports.isUserAdmin = async (req, res, next) => {
     if (!user)
       throw {
         statusCode: 401,
-        message: "User not found."
-      }
+        message: "User not found.",
+      };
 
     const role = await Role.findById(user.role);
     if (role.name !== "admin")
       throw {
         statusCode: 403,
-        message: "You are not authorized to access this resource."
-      }
+        message: "You are not authorized to access this resource.",
+      };
+
+    req.user = user;
 
     next();
   } catch (error) {
     res.status(error.statusCode || 500).json({
-      message: error.message
-    })
+      message: error.message,
+    });
   }
-}
+};

@@ -26,30 +26,32 @@ module.exports.validateExistingRecord = async (model, id, res) => {
     return {
       statusCode: 200,
       message: "Record found.",
-      data: record
-    }
+      data: record,
+    };
   } catch (error) {
     return {
       statusCode: 400,
       message: error.message,
-      data: null
+      data: null,
     };
   }
 };
 
 module.exports.buildFilter = (filter) => {
   return Object.fromEntries(
-    Object.entries(filter).filter(([_, value]) => value)
+    Object.entries(filter)
+      .filter(([_, value]) => value != null && value !== "")
+      .map(([key, value]) => [key, { $regex: new RegExp(value, "i") }])
   );
-}
+};
 
 module.exports.buildSort = (sort, direction) => {
   if (!sort || !direction) return {};
 
   return {
-    [sort]: direction === "asc" ? 1 : -1
-  }
-}
+    [sort]: direction === "asc" ? 1 : -1,
+  };
+};
 
 module.exports.cleanedUser = (user) => {
   const { password, ...cleanedUser } = user.toObject ? user.toObject() : user;
