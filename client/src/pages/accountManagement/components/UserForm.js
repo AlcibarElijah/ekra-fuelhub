@@ -2,14 +2,12 @@
 /*                                   imports                                  */
 /* -------------------------------------------------------------------------- */
 import { useState, useEffect } from "react";
-import { getAllRoles } from "../../../services/roleServices";
+import { getAllRoles } from "../../../services/roleService";
 import { toast } from "react-toastify";
-import { useUserServices } from "../../../hooks/useUserServices";
+import { useUserService } from "../../../hooks/useUserService";
 import { useParams } from "react-router-dom";
-import { getUserById } from "../../../services/userServices";
+import { getUserById } from "../../../services/userService";
 
-// TODO known issue but not a show stopper
-// TODO going from update to create will try to fetch user with not id available
 const UserForm = () => {
   const { id } = useParams();
 
@@ -27,7 +25,7 @@ const UserForm = () => {
     createUser,
     updateUser,
     isLoading: userIsLoading,
-  } = useUserServices();
+  } = useUserService();
 
   useEffect(() => {
     const fetchRoles = async () => {
@@ -103,7 +101,7 @@ const UserForm = () => {
 
   return (
     <div>
-      <h4>{id ? "Edit User" : "Create User"}</h4>
+      <h4>User Form</h4>
       {/* Replace with your actual form */}
       <form className="form" onSubmit={handleSubmit}>
         <label className="form-label mt-3">First Name:</label>
@@ -169,7 +167,7 @@ const UserForm = () => {
           className="btn btn-primary mt-3"
           disabled={userIsLoading || isLoading}
         >
-          {id ? "Update" : "Create"}
+          Submit
         </button>
       </form>
     </div>

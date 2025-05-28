@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useAuthContext } from "../../hooks/useAuthContext";
 import rest from "../../functions/rest";
 import { toast } from "react-toastify";
-import { useUserServices } from "../../hooks/useUserServices";
+import { useUserService } from "../../hooks/useUserService";
 
 const AccountSettings = () => {
   // TODO This user variable might still have a value after the user logs out.
@@ -15,7 +15,7 @@ const AccountSettings = () => {
   const [username, setUsername] = useState(user.username);
   const [role, setRole] = useState(user.role._id);
   const [roleChoices, setRoleChoices] = useState(null);
-  const { updateUser, isLoading } = useUserServices();
+  const { updateUser, isLoading } = useUserService();
 
   useEffect(() => {
     const fetchRoles = async () => {

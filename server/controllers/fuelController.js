@@ -5,12 +5,12 @@ const mongoose = require("mongoose");
 const { handleError, validateExistingRecord } = require("./functions/utils");
 
 /* ---------------------------------- model --------------------------------- */
-const Role = require("../models/Role");
+const Fuel = require("../models/Fuel");
 
 /* -------------------------------------------------------------------------- */
 /*                                controllers                                */
 /* -------------------------------------------------------------------------- */
-module.exports.createRole = async (req, res) => {
+module.exports.createFuel = async (req, res) => {
   try {
     const { name } = req.body;
 
@@ -20,14 +20,14 @@ module.exports.createRole = async (req, res) => {
         message: "Please fill in all required fields.",
       });
 
-    const existingRole = await Role.findOne({ name });
-    if (existingRole)
-      return res.status(400).json({ message: "Role already exists." });
+    const existingFuel = await Fuel.findOne({ name });
+    if (existingFuel)
+      return res.status(400).json({ message: "Fuel already exists." });
 
-    const newRole = await Role.create({ name });
+    const newFuel = await Fuel.create({ name });
     res.status(201).json({
-      message: "Role created successfully.",
-      data: newRole,
+      message: "Fuel created successfully.",
+      data: newFuel,
     });
   } catch (error) {
     handleError(
@@ -38,7 +38,7 @@ module.exports.createRole = async (req, res) => {
   }
 };
 
-module.exports.getAllRoles = async (req, res) => {
+module.exports.getAllFuels = async (req, res) => {
   try {
     const { page = 1, pageSize = 10, name } = req.query;
 
@@ -46,25 +46,29 @@ module.exports.getAllRoles = async (req, res) => {
     const filter = {};
     if (name) filter.name = name;
 
-    const roles = await Role.find(filter)
+    // get total count of users matching the filters
+    const totalCount = await Fuel.countDocuments(filter);
+
+    const fuels = await Fuel.find(filter)
       .skip((page - 1) * pageSize)
       .limit(pageSize);
 
     res.status(200).json({
-      message: "Roles retrieved successfully.",
-      data: roles,
+      message: "Fuels retrieved successfully.",
+      data: fuels,
+      count: totalCount,
     });
   } catch (error) {
-    handleError("Something went wrong while getting the roles.", error, res);
+    handleError("Something went wrong while getting the fuels.", error, res);
   }
 };
 
-module.exports.getSingleRole = async (req, res) => {
+module.exports.getSingleFuel = async (req, res) => {
   try {
     const { id } = req.params;
 
     /* ----------------------------- validations ---------------------------- */
-    const validation = await validateExistingRecord(Role, id);
+    const validation = await validateExistingRecord(Fuel, id);
 
     const responseBody = {
       message: validation.message,
@@ -76,62 +80,62 @@ module.exports.getSingleRole = async (req, res) => {
 
     return res.status(validation.statusCode).json(responseBody);
   } catch (error) {
-    handleError("Something went wrong while getting the role.", error, res);
+    handleError("Something went wrong while getting the fuel.", error, res);
   }
 };
 
-module.exports.updateRole = async (req, res) => {
+module.exports.updateFuel = async (req, res) => {
   try {
     const { id } = req.params;
     const { name } = req.body;
 
     /* ----------------------------- validations ---------------------------- */
-    const validation = await validateExistingRecord(Role, id);
+    const validation = await validateExistingRecord(Fuel, id);
 
     if (validation.statusCode !== 200)
       return res.status(validation.statusCode).json({
         message: validation.message,
       });
 
-    const existingRole = await Role.findOne({ name });
-    if (existingRole && String(existingRole._id) !== String(id))
+    const existingFuel = await Fuel.findOne({ name });
+    if (existingFuel && String(existingFuel._id) !== String(id))
       return res.status(400).json({
-        message: "Role already exists.",
+        message: "Fuel already exists.",
       });
 
-    const updatedRole = await Role.findByIdAndUpdate(
+    const updatedFuel = await Fuel.findByIdAndUpdate(
       id,
       { name },
       { new: true }
     );
 
     res.status(200).json({
-      message: "Role updated successfully.",
-      data: updatedRole,
+      message: "Fuel updated successfully.",
+      data: updatedFuel,
     });
   } catch (error) {
-    handleError("Something went wrong while updating the role.", error, res);
+    handleError("Something went wrong while updating the fuel.", error, res);
   }
 };
 
-module.exports.deleteRole = async (req, res) => {
+module.exports.deleteFuel = async (req, res) => {
   try {
     const { id } = req.params;
 
     /* ----------------------------- validations ---------------------------- */
-    const validation = await validateExistingRecord(Role, id);
+    const validation = await validateExistingRecord(Fuel, id);
 
     if (validation.statusCode !== 200)
       return res.status(validation.statusCode).json({
         message: validation.message,
       });
 
-    const deletedRole = await Role.findByIdAndDelete(id);
+    const deletedFuel = await Fuel.findByIdAndDelete(id);
     res.status(200).json({
-      message: "Role deleted successfully",
-      data: deletedRole,
+      message: "Fuel deleted successfully",
+      data: deletedFuel,
     });
   } catch (error) {
-    handleError("Something went wrong while deleting the role.", error, res);
+    handleError("Something went wrong while deleting the fuel.", error, res);
   }
 };

@@ -14,7 +14,7 @@ export const createUser = async (user) => {
   }
 };
 
-export const getAllUsers = async (params) => {
+export const getUsers = async (params) => {
   try {
     const queryString = buildQueryParams(params);
 

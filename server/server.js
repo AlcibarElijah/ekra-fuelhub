@@ -9,6 +9,8 @@ const cors = require("cors");
 
 /* --------------------------------- routes --------------------------------- */
 const roleRoutes = require("./routes/roleRoutes");
+const fuelRoutes = require("./routes/fuelRoutes");
+const fuelTankRoutes = require("./routes/fuelTankRoutes");
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 
@@ -57,5 +59,7 @@ app.use(express.json()); // parse JSON request bodies
 /*                                   routes                                   */
 /* -------------------------------------------------------------------------- */
 app.use("/api/roles", roleRoutes);
+app.use("/api/fuels", fuelRoutes);
+app.use("/api/fuel-tanks", fuelTankRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);

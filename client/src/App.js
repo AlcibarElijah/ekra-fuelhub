@@ -11,9 +11,11 @@ import AccountSettings from "./pages/accountManagement/AccountSettings";
 import UpdatePassword from "./pages/accountManagement/UpdatePassword";
 import AccountManagement from "./pages/accountManagement/AccountManagement";
 import NotFound from "./pages/NotFound";
+import FuelManagement from "./pages/fuelManagement/FuelManagement";
+import FuelTankManagement from "./pages/fuelTankManagement/FuelTankManagement";
 
 /* ------------------------------- components ------------------------------- */
-import Navbar from "./components/Navbar";
+import Navbar from "./components/nav/Navbar";
 
 /* -------------------------------- contexts -------------------------------- */
 import { useAuthContext } from "./hooks/useAuthContext";
@@ -46,6 +48,8 @@ function App() {
                   )
                 }
               />
+              <Route path="/fuel/management/tank/*" element={<FuelTankManagement />} />
+              <Route path="/fuel/management/*" element={<FuelManagement />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </>

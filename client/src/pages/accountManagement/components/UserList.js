@@ -1,7 +1,7 @@
 /* -------------------------------------------------------------------------- */
 /*                                   imports                                  */
 /* -------------------------------------------------------------------------- */
-import { useUserServices } from "../../../hooks/useUserServices";
+import { useUserService } from "../../../hooks/useUserService";
 import { useNavigate } from "react-router-dom";
 
 /* ------------------------------- components ------------------------------- */
@@ -44,7 +44,7 @@ const UserList = () => {
     }
   ];
 
-  const { getUsers } = useUserServices();
+  const { getUsers } = useUserService();
 
   const onFetch = async (state) => {
     try {

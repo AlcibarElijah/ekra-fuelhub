@@ -2,14 +2,14 @@
 /*                                   imports                                  */
 /* -------------------------------------------------------------------------- */
 import { useState } from "react";
-import { useUserServices } from "../../hooks/useUserServices";
+import { useUserService } from "../../hooks/useUserService";
 import { useAuthContext } from "../../hooks/useAuthContext";
 
 const UpdatePassword = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const { updateUserPassword } = useUserServices();
+  const { updateUserPassword } = useUserService();
 
   const { user } = useAuthContext();
 

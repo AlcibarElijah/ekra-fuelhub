@@ -32,11 +32,7 @@ module.exports.createUser = async (req, res) => {
     if (existingUser)
       return res.status(400).json({ message: "Username already exists." });
 
-    const { statusCode, message } = await validateExistingRecord(
-      Role,
-      roleId,
-      res
-    );
+    const { statusCode, message } = await validateExistingRecord(Role, roleId);
 
     if (statusCode !== 200)
       return res.status(statusCode).json({
@@ -109,7 +105,7 @@ module.exports.getSingleUser = async (req, res) => {
       statusCode,
       message,
       data: existingUser,
-    } = await validateExistingRecord(User, id, res);
+    } = await validateExistingRecord(User, id);
 
     await existingUser.populate("role");
 
@@ -140,7 +136,7 @@ module.exports.updateUser = async (req, res) => {
         message: "Please fill in all required fields.",
       });
 
-    const { statusCode, message } = await validateExistingRecord(User, id, res);
+    const { statusCode, message } = await validateExistingRecord(User, id);
 
     if (statusCode !== 200)
       return res.status(statusCode).json({
@@ -148,7 +144,7 @@ module.exports.updateUser = async (req, res) => {
       });
 
     const { statusCode: roleStatusCode, message: roleMessage } =
-      await validateExistingRecord(Role, roleId, res);
+      await validateExistingRecord(Role, roleId);
 
     if (roleStatusCode !== 200)
       return res.status(roleStatusCode).json({
@@ -208,7 +204,7 @@ module.exports.updatePassword = async (req, res) => {
       statusCode,
       message,
       data: existingUser,
-    } = await validateExistingRecord(User, id, res);
+    } = await validateExistingRecord(User, id);
 
     if (statusCode !== 200)
       return res.status(statusCode).json({
@@ -241,7 +237,7 @@ module.exports.deleteUser = async (req, res) => {
     const { id } = req.params;
 
     /* ----------------------------- validations ---------------------------- */
-    const { statusCode, message } = await validateExistingRecord(User, id, res);
+    const { statusCode, message } = await validateExistingRecord(User, id);
 
     if (statusCode !== 200)
       return res.status(statusCode).json({

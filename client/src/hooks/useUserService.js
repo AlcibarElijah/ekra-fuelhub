@@ -4,11 +4,11 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import rest from "../functions/rest";
-import { useAuthContext } from "../hooks/useAuthContext";
+import { useAuthContext } from "./useAuthContext";
 import { useUtils } from "./useUtils";
-import {  getAllUsers } from "../services/userServices";
+import {  getUsers as getUsersServices } from "../services/userService";
 
-export const useUserServices = () => {
+export const useUserService = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuthContext();
   const { handleError } = useUtils();
@@ -37,7 +37,7 @@ export const useUserServices = () => {
   const getUsers = async (params) => {
     try {
       setIsLoading(true);
-      const response = await getAllUsers(params);
+      const response = await getUsersServices(params);
 
       return response;
     } catch (error) {

@@ -5,17 +5,16 @@ const express = require("express");
 
 /* ------------------------------- controllers ------------------------------ */
 const {
-  createRole,
-  getAllRoles,
-  getSingleRole,
-  updateRole,
-  deleteRole,
-} = require("../controllers/roleController");
+  createFuel,
+  getAllFuels,
+  getSingleFuel,
+  updateFuel,
+  deleteFuel,
+} = require("../controllers/fuelController");
 
 /* ------------------------------- middleware ------------------------------- */
 const {
-  isUserAuthenticated,
-  isUserAdmin,
+  isUserAuthenticated
 } = require("../middlewares/authMiddleware");
 
 /* -------------------------------------------------------------------------- */
@@ -26,16 +25,16 @@ const router = express.Router();
 /* -------------------------------------------------------------------------- */
 /*                                 middleware                                 */
 /* -------------------------------------------------------------------------- */
-router.use(isUserAuthenticated);
+router.use(isUserAuthenticated)
 
 /* -------------------------------------------------------------------------- */
 /*                                   routes                                   */
 /* -------------------------------------------------------------------------- */
-router.post("/", isUserAdmin, createRole);
-router.get("/", getAllRoles);
-router.get("/:id", getSingleRole);
-router.put("/:id", isUserAdmin, updateRole);
-router.delete("/:id", deleteRole);
+router.post("/", createFuel);
+router.get("/", getAllFuels);
+router.get("/:id", getSingleFuel);
+router.put("/:id", updateFuel);
+router.delete("/:id", deleteFuel);
 
 /* -------------------------------------------------------------------------- */
 /*                                   export                                   */
