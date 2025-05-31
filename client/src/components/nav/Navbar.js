@@ -64,6 +64,14 @@ const Navbar = () => {
                     Fuel Tanks
                   </Link>
                 </li>
+                <li>
+                  <Link
+                    className="dropdown-item"
+                    to="/fuel/management/tank-reading/create"
+                  >
+                    Fuel Tank Readings
+                  </Link>
+                </li>
               </ul>
             </li>
           </ul>

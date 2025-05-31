@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { TableContext } from "./Table";
 
-const PaginationControls = ({ maxPages, currentPage }) => {
+const PaginationControls = ({ maxPages, currentPage, className }) => {
   const { dispatch } = useContext(TableContext);
 
   const handlePageClick = (page) => {
@@ -24,7 +24,7 @@ const PaginationControls = ({ maxPages, currentPage }) => {
   }
 
   return (
-    <nav aria-label="Page navigation example">
+    <nav aria-label="Page navigation example" className={className}>
       <ul className="pagination">
         <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
           <button

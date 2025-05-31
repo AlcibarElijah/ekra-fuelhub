@@ -13,6 +13,7 @@ import AccountManagement from "./pages/accountManagement/AccountManagement";
 import NotFound from "./pages/NotFound";
 import FuelManagement from "./pages/fuelManagement/FuelManagement";
 import FuelTankManagement from "./pages/fuelTankManagement/FuelTankManagement";
+import FuelTankReadingManagement from "./pages/fuelTankReadingManagement/FuelTankReadingManagement";
 
 /* ------------------------------- components ------------------------------- */
 import Navbar from "./components/nav/Navbar";
@@ -48,7 +49,11 @@ function App() {
                   )
                 }
               />
-              <Route path="/fuel/management/tank/*" element={<FuelTankManagement />} />
+              <Route
+                path="/fuel/management/tank/*"
+                element={<FuelTankManagement />}
+              />
+              <Route path="/fuel/management/tank-reading/*" element={<FuelTankReadingManagement />} />
               <Route path="/fuel/management/*" element={<FuelManagement />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

@@ -99,3 +99,19 @@ module.exports.cleanedUser = (user) => {
   const { password, ...cleanedUser } = user.toObject ? user.toObject() : user;
   return cleanedUser;
 };
+
+/* ------------------------- check if date is valid ------------------------- */
+/**
+ * Check if the date is a valid date
+ * 
+ * @param {string|number} dateInput - The date to be checked
+ * @return {boolean} whether or not the date is valid
+ */
+module.exports.isValidDate = (dateInput) => {
+  const date = new Date(dateInput);
+
+  // check if date is valid
+  if(isNaN(date.getTime())) return false;
+
+  return true;
+}

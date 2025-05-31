@@ -9,7 +9,7 @@ import {
   useCallback,
 } from "react";
 import { toast } from "react-toastify";
-import "./table.css"
+import "./table.css";
 
 /* -------------------------- pages and components -------------------------- */
 import Th from "./Th";
@@ -44,7 +44,21 @@ const tableStateReducer = (state, action) => {
   }
 };
 
-const Table = ({ className, columns, onFetch }) => {
+/**
+ * Table component
+ * @param {object} props - The props for the table component
+ * @param {string} [props.className] - The class name for the table (this is added to the existing classes)
+ * @param {object[]} props.columns - The columns for the table
+ * @param {string} props.columns[].name - The name (header) of the column
+ * @param {string} [props.columns[].field] - The field of the row to be displayed in the column
+ * @param {boolean} [props.columns[].sortable] - Whether the column is sortable
+ * @param {(row:object) => JSX.Element} [props.columns[].customRender] - A custom render function for the column
+ * @param {(row:object) => string} [props.columns[].customField] - A custom field function for the column
+ * @param {(state:object) => {row:object[], count:number}} props.onFetch - The function to be called when the table is fetched (should return rows and count)
+ * @param {string} [props.identifier="_id"] - The key of the row to be used for the table
+ * @returns {JSX.Element}
+ */
+const Table = ({ className, columns, onFetch, identifier="_id" }) => {
   if (!columns) throw Error("Table must have columns.");
   if (!onFetch) throw Error("Table must have an onFetch function.");
 
@@ -81,47 +95,56 @@ const Table = ({ className, columns, onFetch }) => {
 
   return (
     <TableContext.Provider value={{ ...tableState, dispatch }}>
-      <table className={`table ekra-table ${className}`}>
-        <thead>
-          <tr>
-            {columns.map((column) => (
-              <Th
-                key={`th-key-${column?.name}`}
-                column={column}
-                disabled={!rows}
-              />
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows ? (
-            rows.map((row) => (
-              <tr key={`tr-key-${row._id}`}>
-                {columns.map((column) => (
-                  <td key={`td-key-${column?.name}-${row._id}`}>
-                    {column.customRender
-                      ? column.customRender(row)
-                      : column.customField
-                      ? column.customField(row)
-                      : row[column.field]}
-                  </td>
-                ))}
-              </tr>
-            ))
-          ) : (
+      <div style={{ overflowX: "auto" }}>
+        <table className={`table ekra-table ${className}`}>
+          <thead>
             <tr>
-              <td colSpan={columns.length}>
-                <div className="d-flex justify-content-center">
-                  <div className="spinner-border" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
-                </div>
-              </td>
+              {columns.map((column) => (
+                <Th
+                  key={`th-key-${column?.name}`}
+                  column={column}
+                  disabled={!rows}
+                />
+              ))}
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows ? (
+              rows.length > 0 ? (
+                rows.map((row) => (
+                  <tr key={`tr-key-${row[identifier]}`}>
+                    {columns.map((column) => (
+                      <td key={`td-key-${column?.name}-${row._id}`}>
+                        {column.customRender
+                          ? column.customRender(row)
+                          : column.customField
+                          ? column.customField(row)
+                          : row[column.field]}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={columns.length} style={{ color: "#aaaaaa", textAlign: "center" }}>No records found.</td>
+                </tr>
+              )
+            ) : (
+              <tr>
+                <td colSpan={columns.length}>
+                  <div className="d-flex justify-content-center">
+                    <div className="spinner-border" role="status">
+                      <span className="visually-hidden">Loading...</span>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
       <PaginationControls
+        className="mt-3"
         maxPages={Math.ceil(count / tableState.pageSize)}
         currentPage={tableState.page}
       />

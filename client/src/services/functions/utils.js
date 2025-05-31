@@ -8,5 +8,5 @@ export const buildQueryParams = (params) => {
   };
 
   const queryString = new URLSearchParams(queryParams).toString();
-  return queryString
+  return queryString;
 };
