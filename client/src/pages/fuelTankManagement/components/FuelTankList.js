@@ -41,6 +41,7 @@ const FuelTankList = () => {
           Edit
         </button>
       ),
+      className: "text-end"
     },
   ];
 

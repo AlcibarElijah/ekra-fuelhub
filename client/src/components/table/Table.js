@@ -50,6 +50,7 @@ const tableStateReducer = (state, action) => {
  * @param {string} [props.className] - The class name for the table (this is added to the existing classes)
  * @param {object[]} props.columns - The columns for the table
  * @param {string} props.columns[].name - The name (header) of the column
+ * @param {string} props.columns[].className - class of the td
  * @param {string} [props.columns[].field] - The field of the row to be displayed in the column
  * @param {boolean} [props.columns[].sortable] - Whether the column is sortable
  * @param {(row:object) => JSX.Element} [props.columns[].customRender] - A custom render function for the column
@@ -58,7 +59,7 @@ const tableStateReducer = (state, action) => {
  * @param {string} [props.identifier="_id"] - The key of the row to be used for the table
  * @returns {JSX.Element}
  */
-const Table = ({ className, columns, onFetch, identifier="_id" }) => {
+const Table = ({ className, columns, onFetch, identifier = "_id" }) => {
   if (!columns) throw Error("Table must have columns.");
   if (!onFetch) throw Error("Table must have an onFetch function.");
 
@@ -114,7 +115,10 @@ const Table = ({ className, columns, onFetch, identifier="_id" }) => {
                 rows.map((row) => (
                   <tr key={`tr-key-${row[identifier]}`}>
                     {columns.map((column) => (
-                      <td key={`td-key-${column?.name}-${row._id}`}>
+                      <td
+                        key={`td-key-${column?.name}-${row._id}`}
+                        className={column?.className}
+                      >
                         {column.customRender
                           ? column.customRender(row)
                           : column.customField
@@ -126,7 +130,12 @@ const Table = ({ className, columns, onFetch, identifier="_id" }) => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={columns.length} style={{ color: "#aaaaaa", textAlign: "center" }}>No records found.</td>
+                  <td
+                    colSpan={columns.length}
+                    style={{ color: "#aaaaaa", textAlign: "center" }}
+                  >
+                    No records found.
+                  </td>
                 </tr>
               )
             ) : (

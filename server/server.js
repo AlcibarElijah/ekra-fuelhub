@@ -14,6 +14,8 @@ const fuelTankRoutes = require("./routes/fuelTankRoutes");
 const fuelTankReadingRoutes = require("./routes/fuelTankReadingRoutes");
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
+const positionRoutes = require("./routes/positionRoutes");
+const employeeRoutes = require("./routes/employeeRoutes");
 
 /* -------------------------------------------------------------------------- */
 /*                                  variables                                 */
@@ -25,17 +27,19 @@ const MONGO_URI = process.env.MONGO_URI;
 /* ------------------------------- express app ------------------------------ */
 const app = express();
 const allowedOrigins = [
-  'http://localhost:3000', // Dev
-  'https://ekra-fuelhub-frontend.onrender.com' // Production
+  "http://localhost:3000", // Dev
+  "https://ekra-fuelhub-frontend.onrender.com", // Production
 ];
 
 /* -------------------------------------------------------------------------- */
 /*                                  on start                                  */
 /* -------------------------------------------------------------------------- */
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true, // Only if you're using cookies/auth headers
-}));
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true, // Only if you're using cookies/auth headers
+  })
+);
 
 mongoose
   .connect(MONGO_URI)
@@ -65,3 +69,11 @@ app.use("/api/fuel-tanks", fuelTankRoutes);
 app.use("/api/fuel-tank-readings", fuelTankReadingRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/positions", positionRoutes);
+app.use("/api/employees", employeeRoutes);
+
+app.get("/", (req, res) => {
+  return res.status(200).json({
+    message: "Service working as expected"
+  })
+})

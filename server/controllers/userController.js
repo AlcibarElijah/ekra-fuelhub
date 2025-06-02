@@ -1,7 +1,6 @@
 /* -------------------------------------------------------------------------- */
 /*                                  requires                                  */
 /* -------------------------------------------------------------------------- */
-const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const {
   handleError,
@@ -203,7 +202,6 @@ module.exports.updatePassword = async (req, res) => {
     const {
       statusCode,
       message,
-      data: existingUser,
     } = await validateExistingRecord(User, id);
 
     if (statusCode !== 200)

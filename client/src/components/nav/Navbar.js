@@ -74,6 +74,39 @@ const Navbar = () => {
                 </li>
               </ul>
             </li>
+            <li className="nav-item dropdown">
+              <Link
+                className={`nav-link dropdown-toggle ${
+                  location.pathname.includes("/employee/management")
+                    ? "active"
+                    : ""
+                }`}
+                id="navbarDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                Employee
+              </Link>
+              <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li>
+                  <Link
+                    className="dropdown-item"
+                    to="/employee/management/position/create"
+                  >
+                    Positions
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="dropdown-item"
+                    to="/employee/management/create"
+                  >
+                    Employees
+                  </Link>
+                </li>
+              </ul>
+            </li>
           </ul>
 
           {/* Right side account icon dropdown */}

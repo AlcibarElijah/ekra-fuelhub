@@ -1,36 +1,21 @@
 /* -------------------------------------------------------------------------- */
 /*                                   imports                                  */
 /* -------------------------------------------------------------------------- */
-import { useUserService } from "../../../hooks/useUserService";
-import { useNavigate } from "react-router-dom";
-
 /* ------------------------------- components ------------------------------- */
 import Table from "../../../components/table/Table";
 
-const UserList = () => {
+/* ---------------------------------- hooks --------------------------------- */
+import { usePositionService } from "../../../hooks/usePositionService";
+import { useNavigate } from "react-router-dom";
+
+const PositionList = () => {
+  const { getPositions } = usePositionService();
   const navigate = useNavigate();
 
   const columns = [
     {
-      name: "First Name",
-      field: "firstName",
-      sortable: true,
-    },
-    {
-      name: "Last Name",
-      field: "lastName",
-      sortable: true,
-    },
-    {
-      name: "Username",
-      field: "username",
-      sortable: true,
-    },
-    {
-      name: "Role",
-      customField: (row) => {
-        return row.role.name;
-      },
+      name: "Name",
+      field: "name",
     },
     {
       name: "",
@@ -38,7 +23,9 @@ const UserList = () => {
         return (
           <button
             className="btn btn-primary"
-            onClick={() => navigate(`/account/management/edit/${row._id}`)}
+            onClick={() =>
+              navigate(`/employee/management/position/edit/${row._id}`)
+            }
           >
             Edit
           </button>
@@ -48,19 +35,18 @@ const UserList = () => {
     },
   ];
 
-  const { getUsers } = useUserService();
-
-  const onFetch = async (state) => {
+  /* ------------------------------------------------------------------------ */
+  /*                                 functions                                */
+  /* ------------------------------------------------------------------------ */
+  const onFetch = async (_) => {
     try {
-      const { data, count } = await getUsers(state);
+      const { data, count } = await getPositions();
 
       return {
         rows: data,
         count,
       };
-    } catch (error) {
-      throw error;
-    }
+    } catch (error) {}
   };
 
   return (
@@ -70,4 +56,4 @@ const UserList = () => {
   );
 };
 
-export default UserList;
+export default PositionList;

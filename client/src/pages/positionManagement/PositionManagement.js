@@ -6,18 +6,18 @@ import { Routes, Route } from "react-router-dom";
 /* ------------------------------- components ------------------------------- */
 import SidebarNav from "../../components/nav/SidebarNav";
 import MainContent from "../../components/MainContent";
-import FuelTankReadingForm from "./components/FuelTankReadingForm";
-import FuelTankReadingList from "./components/FuelTankReadingList";
+import PositionForm from "./components/PositionForm";
+import PositionList from "./components/PositionList";
 
-const FuelTankReadingManagement = () => {
+const PositionManagement = () => {
   const sidebarItems = [
     {
-      label: "Create Fuel Tank Reading",
-      path: "/fuel/management/tank-reading/create",
+      label: "Create Position",
+      path: "/employee/management/position/create",
     },
     {
-      label: "Manage Fuel Tank Readings",
-      path: "/fuel/management/tank-reading/list",
+      label: "Manage Positions",
+      path: "/employee/management/position/list",
     },
   ];
 
@@ -27,8 +27,9 @@ const FuelTankReadingManagement = () => {
         <SidebarNav items={sidebarItems} />
         <MainContent>
           <Routes>
-            <Route path="/create" element={<FuelTankReadingForm/>}/>
-            <Route path="/list" element={<FuelTankReadingList />} />
+            <Route path="/create" element={<PositionForm />} />
+            <Route path="/list" element={<PositionList />} />
+            <Route path="/edit/:id" element={<PositionForm />} />
           </Routes>
         </MainContent>
       </div>
@@ -36,4 +37,4 @@ const FuelTankReadingManagement = () => {
   );
 };
 
-export default FuelTankReadingManagement;
+export default PositionManagement;

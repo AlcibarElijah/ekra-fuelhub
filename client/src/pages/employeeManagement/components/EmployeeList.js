@@ -1,13 +1,16 @@
 /* -------------------------------------------------------------------------- */
 /*                                   imports                                  */
 /* -------------------------------------------------------------------------- */
-import { useUserService } from "../../../hooks/useUserService";
+import { formatDate } from "../../../functions/utils";
+
+/* ---------------------------------- hooks --------------------------------- */
+import { useEmployeeService } from "../../../hooks/useEmployeeService";
 import { useNavigate } from "react-router-dom";
 
 /* ------------------------------- components ------------------------------- */
 import Table from "../../../components/table/Table";
 
-const UserList = () => {
+const EmployeeList = () => {
   const navigate = useNavigate();
 
   const columns = [
@@ -22,15 +25,20 @@ const UserList = () => {
       sortable: true,
     },
     {
-      name: "Username",
-      field: "username",
-      sortable: true,
+      name: "Position",
+      customField: (row) => row.position.name,
     },
     {
-      name: "Role",
-      customField: (row) => {
-        return row.role.name;
-      },
+      name: "Day Off",
+      field: "dayOff",
+    },
+    {
+      name: "Birthday",
+      customField: (row) => formatDate(row.birthday),
+    },
+    {
+      name: "Date Started",
+      customField: (row) => formatDate(row.dateStarted),
     },
     {
       name: "",
@@ -38,7 +46,7 @@ const UserList = () => {
         return (
           <button
             className="btn btn-primary"
-            onClick={() => navigate(`/account/management/edit/${row._id}`)}
+            onClick={() => navigate(`/employee/management/edit/${row._id}`)}
           >
             Edit
           </button>
@@ -48,11 +56,11 @@ const UserList = () => {
     },
   ];
 
-  const { getUsers } = useUserService();
+  const { getEmployees } = useEmployeeService();
 
   const onFetch = async (state) => {
     try {
-      const { data, count } = await getUsers(state);
+      const { data, count } = await getEmployees(state);
 
       return {
         rows: data,
@@ -70,4 +78,4 @@ const UserList = () => {
   );
 };
 
-export default UserList;
+export default EmployeeList;
