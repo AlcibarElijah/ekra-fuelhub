@@ -1,11 +1,11 @@
 /* -------------------------------------------------------------------------- */
 /*                                   imports                                  */
 /* -------------------------------------------------------------------------- */
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
 /* ---------------------------------- hooks --------------------------------- */
-import { usePositionService } from "../../../hooks/usePositionService";
-import { useParams } from "react-router-dom";
+import { usePositionService } from '../../../hooks/usePositionService';
+import { useParams } from 'react-router-dom';
 
 const PositionForm = () => {
   const {
@@ -16,7 +16,7 @@ const PositionForm = () => {
   } = usePositionService();
   const { id } = useParams();
 
-  const [name, setName] = useState("");
+  const [name, setName] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -24,7 +24,7 @@ const PositionForm = () => {
   /*                                 functions                                */
   /* ------------------------------------------------------------------------ */
   const resetForm = () => {
-    setName("");
+    setName('');
   };
 
   const onSubmit = async (e) => {
@@ -61,17 +61,17 @@ const PositionForm = () => {
   }, [positionIsLoading]);
 
   return (
-    <form className="form" onSubmit={onSubmit}>
+    <form className='form' onSubmit={onSubmit}>
       <h4>Position Form</h4>
-      <label className="form-label mt-3">Name: </label>
+      <label className='form-label mt-3'>Name: </label>
       <input
-        type="text"
-        className="form-control"
+        type='text'
+        className='form-control'
         value={name}
         onChange={(e) => setName(e.target.value)}
         disabled={isLoading}
       />
-      <button className="btn btn-primary mt-3" disabled={isLoading}>
+      <button className='btn btn-primary btn-sm mt-3' disabled={isLoading}>
         Submit
       </button>
     </form>

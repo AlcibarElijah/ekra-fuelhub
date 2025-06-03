@@ -115,3 +115,7 @@ module.exports.isValidDate = (dateInput) => {
 
   return true;
 }
+
+module.exports.isValidNumber = (number) => {
+  return !(number === "" || isNaN(Number(number)) || number === null);
+}

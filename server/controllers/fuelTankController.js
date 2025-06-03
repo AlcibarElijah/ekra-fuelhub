@@ -117,7 +117,6 @@ module.exports.updateFuelTank = async (req, res) => {
     const { fuelTypeId, capacity, deadstock, acceptableVariance } = req.body;
 
     /* ----------------------------- validations ---------------------------- */
-    console.log(fuelTypeId);
     if (
       !fuelTypeId ||
       capacity === null ||

@@ -1,14 +1,14 @@
 /* -------------------------------------------------------------------------- */
 /*                                   imports                                  */
 /* -------------------------------------------------------------------------- */
-import { formatNumberWithCommas } from "../../../functions/utils";
+import { formatNumberWithCommas } from '../../../functions/utils';
 
 /* ------------------------------- components ------------------------------- */
-import Table from "../../../components/table/Table";
+import Table from '../../../components/table/Table';
 
 /* ---------------------------------- hooks --------------------------------- */
-import { useFuelTankService } from "../../../hooks/useFuelTankService";
-import { useNavigate } from "react-router-dom";
+import { useFuelTankService } from '../../../hooks/useFuelTankService';
+import { useNavigate } from 'react-router-dom';
 
 const FuelTankList = () => {
   const { getFuelTanks } = useFuelTankService();
@@ -16,32 +16,32 @@ const FuelTankList = () => {
 
   const columns = [
     {
-      name: "Fuel Type",
+      name: 'Fuel Type',
       customField: (row) => row.fuelType.name,
     },
     {
-      name: "Capacity",
+      name: 'Capacity',
       customField: (row) => formatNumberWithCommas(row.capacity),
     },
     {
-      name: "Deadstock",
+      name: 'Deadstock',
       customField: (row) => formatNumberWithCommas(row.deadstock),
     },
     {
-      name: "Acceptable Variance",
+      name: 'Acceptable Variance',
       customField: (row) => formatNumberWithCommas(row.acceptableVariance),
     },
     {
-      name: "",
+      name: '',
       customRender: (row) => (
         <button
-          className="btn btn-primary"
+          className='btn btn-primary btn-sm'
           onClick={() => navigate(`/fuel/management/tank/edit/${row._id}`)}
         >
           Edit
         </button>
       ),
-      className: "text-end"
+      className: 'text-end',
     },
   ];
 

@@ -5,35 +5,44 @@ const {
   handleError,
   validateExistingRecord,
   isValidDate,
-} = require("./functions/utils");
+  isValidNumber,
+} = require('./functions/utils');
 
 /* --------------------------------- models --------------------------------- */
-const FuelTankReading = require("../models/FuelTankReading");
-const FuelTank = require("../models/FuelTank");
+const FuelTankReading = require('../models/FuelTankReading');
+const FuelTankReadingVolume = require('../models/fuelTankReadingVolume');
+const FuelTank = require('../models/FuelTank');
+
+/* -------------------------------------------------------------------------- */
+/*                                 definitions                                */
+/* -------------------------------------------------------------------------- */
+/**
+ * The fuel tank reading object submitted by the frontend
+ * @typedef {object} fuelTankReading
+ * @prop {string} fuelTankReading.fuelTankId The ID of the tank associated
+ * @prop {number} fuelTankReading.volume The volume of the fuel tank
+ */
 
 /* -------------------------------------------------------------------------- */
 /*                                  function                                  */
 /* -------------------------------------------------------------------------- */
-const validateFuelTankReadingInputs = async (fuelTankParams) => {
-  const { fuelTankId, volume, date } = fuelTankParams;
+/**
+ * Validate a single fuel tank reading
+ * @param {fuelTankReading} fuelTankReading
+ */
+const validateReading = async (fuelTankReading) => {
+  const { fuelTankId, volume } = fuelTankReading;
 
-  /* ------------------------------ validations ----------------------------- */
-  if (!fuelTankId || volume === "" || isNaN(Number(volume)) || !date)
-    return {
+  if (!isValidNumber(volume))
+    throw {
       statusCode: 400,
-      message: "Please fill in all required fields.",
+      message: 'Please input valid numbers.',
     };
 
   if (volume < 0)
-    return {
+    throw {
       statusCode: 400,
-      message: "Volume must be greater than or equal to 0.",
-    };
-
-  if (!isValidDate(date))
-    return {
-      statusCode: 400,
-      message: "Date must be a valid date.",
+      message: 'Fuel tank reading cannot be negative.',
     };
 
   const { statusCode, message } = await validateExistingRecord(
@@ -42,196 +51,266 @@ const validateFuelTankReadingInputs = async (fuelTankParams) => {
   );
 
   if (statusCode !== 200)
-    return {
+    throw {
       statusCode,
       message,
     };
 
-  const existingFuelTankReading = await FuelTankReading.findOne({
-    date,
-    fuelTank: fuelTankId,
+  return true;
+};
+
+/**
+ * Validates if the values received from the frontend are valid
+ * @param {Date} date The date of the readings
+ * @param {fuelTankReading[]} fuelTankReadings The new readings to be created
+ */
+const validateFuelTankReadingInputs = async (date, fuelTankReadings) => {
+  try {
+    /* ------------------------------ validation ------------------------------ */
+    // Check if date is valid
+    if (!isValidDate(date))
+      throw {
+        statusCode: 400,
+        message: 'Please input a valid date.',
+      };
+
+    // check that all inputs are valid
+    const validityOfEachReading = await Promise.all(
+      fuelTankReadings.map(validateReading)
+    );
+
+    const allTrue = validityOfEachReading.every(Boolean);
+
+    if (!allTrue)
+      throw {
+        statusCode: 500,
+        message: 'Something went wrong while validating the inputs.',
+      };
+
+    return {
+      statusCode: 200,
+    };
+  } catch (error) {
+    return {
+      statusCode: error.statusCode || 500,
+      message: error.message,
+    };
+  }
+};
+
+/**
+ * Create the fuel tank reading
+ * @param {Date} date The date of the reading
+ * @param {fuelTankReading[]} fuelTankReadings The fuel tank readings
+ * @returns
+ */
+const createFuelTankReadingVolumes = async (date, fuelTankReadings) => {
+  let newFuelTankReadingVolumes;
+  try {
+    const fuelTankReading = await FuelTankReading.create({ date });
+
+    newFuelTankReadingVolumes = await Promise.all(
+      fuelTankReadings.map((reading) =>
+        FuelTankReadingVolume.create({
+          reading: fuelTankReading._id,
+          fuelTank: reading.fuelTankId,
+          volume: reading.volume,
+        })
+      )
+    );
+
+    return {
+      ...fuelTankReading,
+      readings: [...newFuelTankReadingVolumes],
+    };
+  } catch (error) {
+    await Promise.all(
+      newFuelTankReadingVolumes.map((reading) =>
+        FuelTankReadingVolume.findByIdAndDelete(reading._id)
+      )
+    );
+
+    throw error;
+  }
+};
+
+const updateFuelTankReadingVolumes = async (id, date, fuelTankReadings) => {
+  let originalFuelTankReadingVolumes, newFuelTankReadingVolumes;
+  try {
+    const fuelTankReading = await FuelTankReading.findById(id);
+
+    if (!fuelTankReading) {
+      throw {
+        statusCode: 404,
+        message: 'Fuel tank reading not found.',
+      };
+    }
+
+    const updatedFuelTankReading = await FuelTankReading.findByIdAndUpdate(
+      id,
+      {
+        date,
+      },
+      { new: true }
+    );
+
+    // Get original volumes before updating
+    originalFuelTankReadingVolumes = await Promise.all(
+      fuelTankReadings.map((reading) =>
+        FuelTankReadingVolume.findById(reading._id)
+      )
+    );
+
+    console.log(fuelTankReadings);
+
+    // Update all volumes in parallel
+    newFuelTankReadingVolumes = await Promise.all(
+      fuelTankReadings.map(
+        async (reading) =>
+          await FuelTankReadingVolume.findOneAndUpdate(
+            { fuelTank: reading.fuelTankId, reading: id },
+            {
+              fuelTank: reading.fuelTankId,
+              volume: reading.volume,
+            },
+            { new: true }
+          )
+      )
+    );
+
+    console.log('newFuelTankReadingVolumes', newFuelTankReadingVolumes);
+
+    return {
+      ...updatedFuelTankReading.toObject(),
+      readings: [...newFuelTankReadingVolumes],
+    };
+  } catch (error) {
+    // Revert back to original values if any update failed
+    if (originalFuelTankReadingVolumes) {
+      await Promise.all(
+        originalFuelTankReadingVolumes.map((originalReading) =>
+          FuelTankReadingVolume.findByIdAndUpdate(originalReading._id, {
+            fuelTank: originalReading.fuelTank,
+            volume: originalReading.volume,
+          })
+        )
+      );
+    }
+
+    throw error;
+  }
+};
+
+/**
+ * Populates the fuel tank reading
+ * @param {object} fuelTankReading
+ * @returns
+ */
+const getPopulatedFuelTankReading = async (fuelTankReading) => {
+  const volumes = await FuelTankReadingVolume.find({
+    reading: fuelTankReading._id,
   });
 
-  if (existingFuelTankReading)
-    throw {
-      statusCode: 400,
-      message:
-        "Fuel Tank Reading for this date already exists. If you wish to edit an entry, go to the edit page instead.",
-    };
-
   return {
-    statusCode: 200,
+    _id: fuelTankReading._id,
+    date: fuelTankReading.date,
+    volumes,
   };
+};
+
+const getPopulatedFuelTankReadings = async (fuelTankReadings) => {
+  const populatedFuelTankReadings = await Promise.all(
+    fuelTankReadings.map(
+      async (reading) => await getPopulatedFuelTankReading(reading)
+    )
+  );
+
+  return populatedFuelTankReadings;
 };
 
 /* -------------------------------------------------------------------------- */
 /*                                 controllers                                */
 /* -------------------------------------------------------------------------- */
-module.exports.createFuelTankReading = async (req, res) => {
-  try {
-    const { fuelTankId, volume, date } = req.body;
-
-    /* ----------------------------- validation ----------------------------- */
-    const { statusCode, message } = await validateFuelTankReadingInputs({
-      fuelTankId,
-      volume,
-      date,
-    });
-
-    if (statusCode !== 200) return res.status(statusCode).json({ message });
-
-    const newFuelTankReading = await FuelTankReading.create({
-      fuelTank: fuelTankId,
-      volume,
-      date,
-    }).populate("fuelTank");
-
-    res.status(201).json({
-      message: "Fuel Tank Reading created successfully.",
-      data: newFuelTankReading,
-    });
-  } catch (error) {
-    handleError(
-      "Something went wrong while creating the fuel tank reading.",
-      error,
-      res
-    );
-  }
-};
-
-module.exports.batchCreateFuelTankReadings = async (req, res) => {
-  let createdFuelTankReadings = [];
+module.exports.createFuelTankReadings = async (req, res) => {
   try {
     const { date, fuelTankReadings } = req.body;
 
     /* ----------------------------- validation ----------------------------- */
-    createdFuelTankReadings = await Promise.all(
-      fuelTankReadings.map(async (reading) => {
-        const { fuelTankId, volume } = reading;
-
-        /* -------------------------- validation; ------------------------- */
-        const { statusCode, message } = await validateFuelTankReadingInputs({
-          fuelTankId,
-          volume,
-          date,
-        });
-
-        if (statusCode !== 200) throw { statusCode, message };
-
-        const newFuelTankReading = await FuelTankReading.create({
-          fuelTank: fuelTankId,
-          volume,
-          date,
-        });
-
-        return {
-          statusCode: 201,
-          message: "Fuel Tank Reading created successfully.",
-          data: await newFuelTankReading.populate("fuelTank"),
-        };
-      })
+    const { statusCode, message } = await validateFuelTankReadingInputs(
+      date,
+      fuelTankReadings
     );
 
-    return res.status(201).json({
-      message: "Fuel Tank Readings created successfully.",
-      data: createdFuelTankReadings.map(
-        (fuelTankReading) => fuelTankReading.data
-      ),
-    });
+    if (statusCode !== 200) return res.status(statusCode).json({ message });
+
+    const response = await createFuelTankReadingVolumes(date, fuelTankReadings);
+
+    res.status(201).json(response);
   } catch (error) {
     handleError(
-      error.statusCode
-        ? error.message
-        : "Something went wrong while creating the fuel tank readings.",
+      'Something went wrong while trying to create the fuel tank reading',
       error,
       res
-    );
-
-    /* --------------------- delete any records created --------------------- */
-    await Promise.all(
-      createdFuelTankReadings.map(async (reading) => {
-        return await FuelTankReading.findByIdAndDelete(reading.data._id);
-      })
     );
   }
 };
 
-module.exports.getAllFuelTankReadings = async (req, res) => {
+module.exports.getFuelTankReadings = async (req, res) => {
   try {
-    const {
-      fuelTankId,
-      startDate,
-      endDate,
-      page = 1,
-      pageSize = 25,
-    } = req.query;
-
-    /* ----------------------------- validation ----------------------------- */
-    if (startDate >= endDate)
-      return res.status(400).json({
-        message: "Start date must be before end date.",
-      });
+    const { page = 1, pageSize = 25, startDate, endDate } = req.query;
 
     const query = {};
 
-    // Filter by tank ID
-    if (fuelTankId) {
-      query.fuelTank = fuelTankId;
-    }
-
-    // Filter by date range
     if (startDate || endDate) {
-      query.recordedAt = {};
-      if (startDate) query.recordedAt.$gte = new Date(startDate);
-      if (endDate) query.recordedAt.$lte = new Date(endDate);
+      query.date = {};
+      if (startDate) query.date.$gte = new Date(startDate);
+      if (endDate) query.date.$lte = new Date(endDate);
     }
 
-    const skip = (Number(page) - 1) * Number(pageSize);
-    const limit = Number(pageSize);
+    const skip = (parseInt(page) - 1) * parseInt(pageSize);
+    const limit = parseInt(pageSize);
 
-    // Get total count before pagination
-    const count = await FuelTankReading.countDocuments(query);
+    const [readings, count] = await Promise.all([
+      FuelTankReading.find(query).sort({ date: -1 }).skip(skip).limit(limit),
+      FuelTankReading.countDocuments(query),
+    ]);
 
-    // Fetch paginated readings
-    const data = await FuelTankReading.find(query)
-      .sort({ recordedAt: -1 }) // Most recent first
-      .skip(skip)
-      .limit(limit)
-      .populate("fuelTank") // optional: populate fuel tank
-      .lean();
-
-    return res.status(200).json({
-      message: "Fuel tank readings retrieved successfully.",
-      data,
+    res.status(200).json({
+      message: 'Fuel tank readings retrieved successfully.',
+      data: await getPopulatedFuelTankReadings(readings),
       count,
     });
   } catch (error) {
     handleError(
-      "Something went wrong while getting the fuel tank readings.",
+      'Something went wrong while getting the fuel tank readings',
       error,
       res
     );
   }
 };
 
-module.exports.getSingleFuelTankReading = async (req, res) => {
+module.exports.getFuelTankReading = async (req, res) => {
   try {
     const { id } = req.params;
 
-    /* ------------------------------ validate ------------------------------ */
-    const { statusCode, message, data } = await validateExistingRecord(
-      FuelTank,
-      id
-    );
+    const {
+      statusCode,
+      message,
+      data: fuelTankReading,
+    } = await validateExistingRecord(FuelTankReading, id);
 
     if (statusCode !== 200)
       return res.status(statusCode).json({
         message,
-        data: data.populate("fuelTank"),
       });
+
+    return res.status(200).json({
+      message: 'Fuel tank reading retrieved successfully.',
+      data: await getPopulatedFuelTankReading(fuelTankReading),
+    });
   } catch (error) {
     handleError(
-      "Something went wrong while getting the fuel tank reading.",
+      'Something went wrong while getting the fuel tank reading.',
       error,
       res
     );
@@ -242,71 +321,99 @@ module.exports.updateFuelTankReading = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const { fuelTankId, volume, date } = req.body;
+    const { date, fuelTankReadings } = req.body;
 
     /* ----------------------------- validation ----------------------------- */
     const { statusCode, message } = await validateExistingRecord(
       FuelTankReading,
       id
     );
-
-    if (statusCode !== 200)
-      return res.status(statusCode).json({
-        message,
-      });
+    if (statusCode !== 200) return res.status(statusCode).json({ message });
 
     const { statusCode: inputStatusCode, message: inputMessage } =
-      await validateFuelTankReadingInputs({
-        fuelTankId,
-        volume,
-        date,
-      });
-
+      await validateFuelTankReadingInputs(date, fuelTankReadings);
     if (inputStatusCode !== 200)
-      return res.status(inputStatusCode).json({
-        message: inputMessage,
-      });
+      return res.status(inputStatusCode).json({ message: inputMessage });
 
-    const updatedFuelTankReading = await FuelTankReading.findByIdAndUpdate(id, {
-      fuelTank: fuelTankId,
-      volume,
+    const response = await updateFuelTankReadingVolumes(
+      id,
       date,
-    }).populate("fuelTank");
+      fuelTankReadings
+    );
 
-    return res.status(200).json({
-      message: "Fuel Tank Reading updated successfully.",
-      data: updatedFuelTankReading,
+    res.status(200).json({
+      message: 'Fuel tank reading updated successfully.',
+      data: response,
     });
   } catch (error) {
     handleError(
-      "Something went wrong while updating the fuel tank reading.",
+      'Something went wrong while updating the fuel tank reading.',
       error,
       res
     );
   }
 };
 
+/**
+ * Deletes a FuelTankReading and its associated FuelTankReadingVolume records by FuelTankReading ID.
+ * If any deletion fails, attempts to restore the deleted records.
+ */
 module.exports.deleteFuelTankReading = async (req, res) => {
+  let originalFuelTankReading = null;
+  let originalVolumes = null;
   try {
     const { id } = req.params;
 
-    /* ------------------------------ validate ------------------------------ */
-    const { statusCode, message } = await validateExistingRecord(
-      FuelTankReading,
-      id
-    );
+    // Validate existence of FuelTankReading
+    const fuelTankReading = await FuelTankReading.findById(id);
+    if (!fuelTankReading) {
+      return res.status(404).json({ message: 'Fuel tank reading not found.' });
+    }
 
-    if (statusCode !== 200) return res.status(statusCode).json({ message });
+    // Find all associated FuelTankReadingVolume records
+    const volumes = await FuelTankReadingVolume.find({ reading: id });
 
-    const deletedFuelTankReading = await FuelTankReading.findByIdAndDelete(id);
+    // Store original data for rollback
+    originalFuelTankReading = fuelTankReading.toObject();
+    originalVolumes = volumes.map((v) => v.toObject());
 
-    return res.status(200).json({
-      message: "Fuel Tank Reading deleted successfully.",
-      data: deletedFuelTankReading,
+    // Attempt to delete FuelTankReadingVolume records
+    await FuelTankReadingVolume.deleteMany({ reading: id });
+    // Attempt to delete FuelTankReading
+    await FuelTankReading.findByIdAndDelete(id);
+
+    res.status(200).json({
+      message: 'Fuel tank reading and associated volumes deleted successfully.',
     });
   } catch (error) {
+    // Rollback logic: try to restore deleted records if deletion failed
+    try {
+      if (originalFuelTankReading) {
+        // Restore FuelTankReading
+        await FuelTankReading.create({
+          _id: originalFuelTankReading._id,
+          date: originalFuelTankReading.date,
+          __v: originalFuelTankReading.__v,
+        });
+      }
+      if (originalVolumes && originalVolumes.length > 0) {
+        // Restore FuelTankReadingVolume records
+        await FuelTankReadingVolume.insertMany(
+          originalVolumes.map((v) => ({
+            _id: v._id,
+            reading: v.reading,
+            fuelTank: v.fuelTank,
+            volume: v.volume,
+            __v: v.__v,
+          }))
+        );
+      }
+    } catch (rollbackError) {
+      // If rollback fails, log error but do not throw
+      console.error('Rollback failed:', rollbackError);
+    }
     handleError(
-      "Something went wrong while deleting the fuel tank reading.",
+      'Something went wrong while deleting the fuel tank reading.',
       error,
       res
     );

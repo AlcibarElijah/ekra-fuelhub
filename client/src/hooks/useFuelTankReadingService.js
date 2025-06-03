@@ -1,14 +1,14 @@
 /* -------------------------------------------------------------------------- */
 /*                                   imports                                  */
 /* -------------------------------------------------------------------------- */
-import { useState } from "react";
-import { toast } from "react-toastify";
+import { useState } from 'react';
+import { toast } from 'react-toastify';
 
 /* ---------------------------------- hooks --------------------------------- */
-import { useUtils } from "./useUtils";
+import { useUtils } from './useUtils';
 
 /* -------------------------------- services -------------------------------- */
-import fuelTankReadingService from "../services/fuelTankReadingService";
+import fuelTankReadingService from '../services/fuelTankReadingService';
 
 export const useFuelTankReadingService = () => {
   const { handleError } = useUtils();
@@ -32,7 +32,7 @@ export const useFuelTankReadingService = () => {
       toast.success(message);
     } catch (error) {
       handleError(
-        "Something went wrong while creating the fuel tank reading.",
+        'Something went wrong while creating the fuel tank reading.',
         error
       );
     } finally {
@@ -59,9 +59,10 @@ export const useFuelTankReadingService = () => {
       toast.success(message);
     } catch (error) {
       handleError(
-        "Something went wrong while creating the fuel tank readings.",
+        'Something went wrong while creating the fuel tank readings.',
         error
       );
+      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -86,7 +87,7 @@ export const useFuelTankReadingService = () => {
       return { data, count };
     } catch (error) {
       handleError(
-        "Something went wrong while getting the fuel tank readings.",
+        'Something went wrong while getting the fuel tank readings.',
         error
       );
     } finally {
@@ -106,7 +107,7 @@ export const useFuelTankReadingService = () => {
       return data;
     } catch (error) {
       handleError(
-        "Something went wrong while getting the fuel tank reading.",
+        'Something went wrong while getting the fuel tank reading.',
         error
       );
     } finally {
@@ -122,19 +123,45 @@ export const useFuelTankReadingService = () => {
    * @param {number} updatedFuelTankReading.volume - The volume of the fuel tank reading
    * @param {date} updatedFuelTankReading.date - The date of the fuel tank reading
    */
-  const updateFuelTankReading = async (id, updatedFuelTankReading) => {
+  const updateFuelTankReading = async (id, date, updatedFuelTankReading) => {
     try {
       setIsLoading(true);
       const { message } = await fuelTankReadingService.updateFuelTankReading(
+        id,
+        date,
         updatedFuelTankReading
       );
 
       toast.success(message);
     } catch (error) {
       handleError(
-        "Something went wrong while updating the fuel tank reading.",
+        'Something went wrong while updating the fuel tank reading.',
         error
       );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  /**
+   * Batch update of the fuel tank readings
+   * @param {object[]} fuelTankReadings - The updated fuel tank readings
+   * @param {string|objectId} fuelTankReadings._id - The id of the fuel tank reading
+   * @param {string|object} fuelTankReadings.fuelTankId - The id of the fuel tank
+   * @param {number} fuelTankReadings.volume - The volume of the fuel tank reading
+   * @param {date} fuelTankReadings.date - The date of the fuel tank reading
+   * @returns {{ message: string | data: object[] }}
+   */
+  const batchUpdateFuelTankReadings = async (fuelTankReadings) => {
+    try {
+      setIsLoading(true);
+      const { message } =
+        await fuelTankReadingService.batchUpdateFuelTankReadings(
+          fuelTankReadings
+        );
+
+      toast.success(message);
+    } catch (error) {
     } finally {
       setIsLoading(false);
     }
@@ -154,7 +181,7 @@ export const useFuelTankReadingService = () => {
       toast.success(message);
     } catch (error) {
       handleError(
-        "Something went wrong deleting the fuel tank reading.",
+        'Something went wrong deleting the fuel tank reading.',
         error
       );
     } finally {
@@ -169,6 +196,7 @@ export const useFuelTankReadingService = () => {
     getAllFuelTankReadings,
     getFuelTankReadingById,
     updateFuelTankReading,
+    batchUpdateFuelTankReadings,
     deleteFuelTankReading,
   };
 };

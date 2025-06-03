@@ -11,14 +11,25 @@ const Schema = mongoose.Schema;
 /* -------------------------------------------------------------------------- */
 /*                                   schema                                   */
 /* -------------------------------------------------------------------------- */
-const FuelTankReadingSchema = new Schema({
-  date: {
-    type: Date,
+const FuelTankReadingVolumeSchema = new Schema({
+  reading: {
+    type: Schema.ObjectId,
+    ref: "FuelTankReading",
     required: true,
+  },
+  fuelTank: {
+    type: Schema.ObjectId,
+    ref: "FuelTank",
+    required: true,
+  },
+  volume: {
+    type: Number,
+    required: true,
+    default: 0,
   }
 });
 
 /* -------------------------------------------------------------------------- */
 /*                                   exports                                  */
 /* -------------------------------------------------------------------------- */
-module.exports = mongoose.model("FuelTankReading", FuelTankReadingSchema);
+module.exports = mongoose.model("FuelTankReadingVolume", FuelTankReadingVolumeSchema);

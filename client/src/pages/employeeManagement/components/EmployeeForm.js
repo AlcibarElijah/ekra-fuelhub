@@ -1,13 +1,13 @@
 /* -------------------------------------------------------------------------- */
 /*                                   imports                                  */
 /* -------------------------------------------------------------------------- */
-import { useState, useEffect } from "react";
-import { formatDateToInputReadableString } from "../../../functions/utils";
+import { useState, useEffect } from 'react';
+import { formatDateToInputReadableString } from '../../../functions/utils';
 
 /* ---------------------------------- hooks --------------------------------- */
-import { useEmployeeService } from "../../../hooks/useEmployeeService";
-import { usePositionService } from "../../../hooks/usePositionService";
-import { useParams } from "react-router-dom";
+import { useEmployeeService } from '../../../hooks/useEmployeeService';
+import { usePositionService } from '../../../hooks/usePositionService';
+import { useParams } from 'react-router-dom';
 
 const EmployeeForm = () => {
   const {
@@ -19,14 +19,14 @@ const EmployeeForm = () => {
   const { getPositions, isLoading: positionIsLoading } = usePositionService();
   const { id } = useParams();
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [positionId, setPositionId] = useState("");
-  const [dayOff, setDayOff] = useState("Sunday");
-  const [birthday, setBirthday] = useState("");
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [positionId, setPositionId] = useState('');
+  const [dayOff, setDayOff] = useState('Sunday');
+  const [birthday, setBirthday] = useState('');
   const [dateStarted, setDateStarted] = useState(() => {
     const today = new Date();
-    return today.toISOString().split("T")[0]; // "YYYY-MM-DD"
+    return today.toISOString().split('T')[0]; // "YYYY-MM-DD"
   });
 
   const [positionChoices, setPositionChoices] = useState(null);
@@ -64,9 +64,9 @@ const EmployeeForm = () => {
   };
 
   const emptyForm = () => {
-    setFirstName("");
-    setLastName("");
-    setBirthday("");
+    setFirstName('');
+    setLastName('');
+    setBirthday('');
   };
 
   /* ------------------------------------------------------------------------ */
@@ -93,7 +93,7 @@ const EmployeeForm = () => {
         setPositionId(employee.positionId);
       } catch (error) {}
     };
-    
+
     emptyForm();
     fetchPosition();
 
@@ -107,27 +107,27 @@ const EmployeeForm = () => {
 
   return (
     <div>
-      <form className="form" onSubmit={handleSubmit}>
+      <form className='form' onSubmit={handleSubmit}>
         <h4>Employee Form</h4>
-        <label className="form-label mt-3">First Name:</label>
+        <label className='form-label mt-3'>First Name:</label>
         <input
-          type="text"
-          className="form-control"
+          type='text'
+          className='form-control'
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
           disabled={isLoading}
         />
-        <label className="form-label mt-3">Last Name:</label>
+        <label className='form-label mt-3'>Last Name:</label>
         <input
-          type="text"
-          className="form-control"
+          type='text'
+          className='form-control'
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
           disabled={isLoading}
         />
-        <label className="form-label mt-3">Position:</label>
+        <label className='form-label mt-3'>Position:</label>
         <select
-          className="form-control"
+          className='form-control'
           value={positionId}
           onChange={(e) => setPositionId(e.target.value)}
           disabled={isLoading}
@@ -139,38 +139,38 @@ const EmployeeForm = () => {
               </option>
             ))}
         </select>
-        <label className="form-label mt-3">Day Off:</label>
+        <label className='form-label mt-3'>Day Off:</label>
         <select
-          className="form-control"
+          className='form-control'
           disabled={isLoading}
           value={dayOff}
           onChange={(e) => setDayOff(e.target.value)}
         >
-          <option value="Sunday">Sunday</option>
-          <option value="Monday">Monday</option>
-          <option value="Tuesday">Tuesday</option>
-          <option value="Wednesday">Wednesday</option>
-          <option value="Thursday">Thursday</option>
-          <option value="Friday">Friday</option>
-          <option value="Saturday">Saturday</option>
+          <option value='Sunday'>Sunday</option>
+          <option value='Monday'>Monday</option>
+          <option value='Tuesday'>Tuesday</option>
+          <option value='Wednesday'>Wednesday</option>
+          <option value='Thursday'>Thursday</option>
+          <option value='Friday'>Friday</option>
+          <option value='Saturday'>Saturday</option>
         </select>
-        <label className="form-label mt-3">Birthday:</label>
+        <label className='form-label mt-3'>Birthday:</label>
         <input
-          type="date"
-          className="form-control"
+          type='date'
+          className='form-control'
           value={birthday}
           onChange={(e) => setBirthday(e.target.value)}
           disabled={isLoading}
         />
-        <label className="form-label mt-3">Date Started:</label>
+        <label className='form-label mt-3'>Date Started:</label>
         <input
-          type="date"
-          className="form-control"
+          type='date'
+          className='form-control'
           value={dateStarted}
           onChange={(e) => setDateStarted(e.target.value)}
           disabled={isLoading}
         />
-        <button className="btn btn-primary mt-3" disabled={isLoading}>
+        <button className='btn btn-primary btn-sm mt-3' disabled={isLoading}>
           Submit
         </button>
       </form>

@@ -2,11 +2,11 @@
 /*                                   imports                                  */
 /* -------------------------------------------------------------------------- */
 /* ------------------------------- components ------------------------------- */
-import Table from "../../../components/table/Table";
+import Table from '../../../components/table/Table';
 
 /* ---------------------------------- hooks --------------------------------- */
-import { usePositionService } from "../../../hooks/usePositionService";
-import { useNavigate } from "react-router-dom";
+import { usePositionService } from '../../../hooks/usePositionService';
+import { useNavigate } from 'react-router-dom';
 
 const PositionList = () => {
   const { getPositions } = usePositionService();
@@ -14,15 +14,15 @@ const PositionList = () => {
 
   const columns = [
     {
-      name: "Name",
-      field: "name",
+      name: 'Name',
+      field: 'name',
     },
     {
-      name: "",
+      name: '',
       customRender: (row) => {
         return (
           <button
-            className="btn btn-primary"
+            className='btn btn-primary btn-sm'
             onClick={() =>
               navigate(`/employee/management/position/edit/${row._id}`)
             }
@@ -31,7 +31,7 @@ const PositionList = () => {
           </button>
         );
       },
-      className: "text-end",
+      className: 'text-end',
     },
   ];
 

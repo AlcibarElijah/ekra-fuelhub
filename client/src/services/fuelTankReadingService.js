@@ -1,9 +1,9 @@
 /* -------------------------------------------------------------------------- */
 /*                                   imports                                  */
 /* -------------------------------------------------------------------------- */
-import rest from "../functions/rest";
-import { isValidDate } from "../functions/utils";
-import { buildQueryParams } from "./functions/utils";
+import rest from '../functions/rest';
+import { isValidDate } from '../functions/utils';
+import { buildQueryParams } from './functions/utils';
 
 /* -------------------------------------------------------------------------- */
 /*                                  functions                                 */
@@ -19,13 +19,13 @@ const validateFuelTankReadingInputs = (fuelTankParams) => {
   try {
     const { fuelTankId, volume, date } = fuelTankParams;
 
-    if (!fuelTankId || !volume === "" || isNaN(Number(volume)) || !date)
-      throw new Error("Please fill in all required fields.");
+    if (!fuelTankId || !volume === '' || isNaN(Number(volume)) || !date)
+      throw new Error('Please fill in all required fields.');
 
     if (volume < 0)
-      throw new Error("Volume must be greater than or equal to 0.");
+      throw new Error('Volume must be greater than or equal to 0.');
 
-    if (!isValidDate(date)) throw new Error("Date must be a valid date.");
+    if (!isValidDate(date)) throw new Error('Date must be a valid date.');
   } catch (error) {
     throw error;
   }
@@ -44,7 +44,7 @@ export const createFuelTankReading = async (newFuelTankReading) => {
     validateFuelTankReadingInputs(newFuelTankReading);
 
     const response = await rest.post(
-      "/api/fuel-tank-readings",
+      '/api/fuel-tank-readings',
       newFuelTankReading
     );
 
@@ -63,21 +63,21 @@ export const createFuelTankReading = async (newFuelTankReading) => {
  */
 export const batchCreateFuelTankReadings = async (date, fuelTankReadings) => {
   try {
-    /* ----------------------------- validation ----------------------------- */
-    fuelTankReadings.map((reading) => {
+    // Validate each reading
+    fuelTankReadings.forEach((reading) => {
       const { fuelTankId, volume } = reading;
-      return validateFuelTankReadingInputs({
+      validateFuelTankReadingInputs({
         fuelTankId,
         volume,
         date,
       });
     });
 
-    const response = await rest.post("/api/fuel-tank-readings/batch", {
+    // Send as a single POST to /api/fuel-tank-readings with { date, fuelTankReadings }
+    const response = await rest.post('/api/fuel-tank-readings', {
       date,
       fuelTankReadings,
     });
-
     return response;
   } catch (error) {
     throw error;
@@ -96,14 +96,14 @@ export const batchCreateFuelTankReadings = async (date, fuelTankReadings) => {
  */
 export const getAllFuelTankReadings = async (params) => {
   try {
-    const { startDate = "", endDate = "" } = params;
+    const { startDate = '', endDate = '' } = params;
 
     if (startDate && !isValidDate(startDate)) {
-      throw new Error("Start date must be a valid date.");
+      throw new Error('Start date must be a valid date.');
     }
 
     if (endDate && !isValidDate(endDate)) {
-      throw new Error("End date must be a valid date.");
+      throw new Error('End date must be a valid date.');
     }
 
     if (startDate && endDate) {
@@ -111,7 +111,7 @@ export const getAllFuelTankReadings = async (params) => {
       const end = new Date(endDate);
 
       if (start >= end) {
-        throw new Error("Start date must be before end date.");
+        throw new Error('Start date must be before end date.');
       }
     }
 
@@ -149,19 +149,46 @@ export const getFuelTankReadingById = async (id) => {
  * @param {date} updatedFuelTankReading.date - The date of the fuel tank reading
  * @param {{ message: string, data: object }}
  */
-export const updateFuelTankReading = async (id, updatedFuelTankReading) => {
+export const updateFuelTankReading = async (
+  id,
+  date,
+  updatedFuelTankReading
+) => {
   try {
-    validateFuelTankReadingInputs(updateFuelTankReading);
+    // Validate each reading
+    updatedFuelTankReading.forEach((reading) => {
+      const { fuelTankId, volume } = reading;
+      validateFuelTankReadingInputs({
+        fuelTankId,
+        volume,
+        date,
+      });
+    });
 
-    const response = await rest.put(
-      `/api/fuel-tank-readings/${id}`,
-      updatedFuelTankReading
-    );
+    const response = await rest.put(`/api/fuel-tank-readings/${id}`, {
+      date,
+      fuelTankReadings: updatedFuelTankReading,
+    });
 
     return response;
   } catch (error) {
     throw error;
   }
+};
+
+/**
+ * Batch update of the fuel tank readings
+ * @param {object[]} fuelTankReadings - The updated fuel tank readings
+ * @param {string|objectId} fuelTankReadings._id - The id of the fuel tank reading
+ * @param {string|object} fuelTankReadings.fuelTankId - The id of the fuel tank
+ * @param {number} fuelTankReadings.volume - The volume of the fuel tank reading
+ * @param {date} fuelTankReadings.date - The date of the fuel tank reading
+ * @returns {{ message: string | data: object[] }}
+ */
+// Batch update is not supported by the backend routes as written. If needed, implement on backend or update each individually.
+// Placeholder for batch update (not implemented)
+export const batchUpdateFuelTankReadings = async (fuelTankReadings) => {
+  throw new Error('Batch update endpoint not implemented on backend.');
 };
 
 /**
@@ -185,6 +212,7 @@ const fuelTankReadingService = {
   getAllFuelTankReadings,
   getFuelTankReadingById,
   updateFuelTankReading,
+  batchUpdateFuelTankReadings,
   deleteFuelTankReading,
 };
 

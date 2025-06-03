@@ -1,20 +1,33 @@
 /* -------------------------------------------------------------------------- */
 /*                                   imports                                  */
 /* -------------------------------------------------------------------------- */
-import { useState, useEffect } from "react";
-import { formatNumberWithCommas } from "../../../functions/utils";
+import { useState, useEffect } from 'react';
+import { formatNumberWithCommas, formatDate } from '../../../functions/utils';
 
 /* ------------------------------- components ------------------------------- */
-import Table from "../../../components/table/Table";
-import Spinner from "../../../components/Spinner";
+import Table from '../../../components/table/Table';
+import Spinner from '../../../components/Spinner';
 
 /* ---------------------------------- hooks --------------------------------- */
-import { useFuelTankService } from "../../../hooks/useFuelTankService";
-import { useFuelTankReadingService } from "../../../hooks/useFuelTankReadingService";
+import { useFuelTankService } from '../../../hooks/useFuelTankService';
+import { useFuelTankReadingService } from '../../../hooks/useFuelTankReadingService';
+import { useNavigate } from 'react-router-dom';
+
+// Edit button component for each row
+const EditButton = ({ onClick, disabled }) => (
+  <button
+    className='btn btn-primary btn-sm'
+    onClick={onClick}
+    disabled={disabled}
+  >
+    Edit
+  </button>
+);
 
 const FuelTankReadingList = () => {
   const { getFuelTanks, isLoading: fuelTankIsLoading } = useFuelTankService();
   const { getAllFuelTankReadings } = useFuelTankReadingService();
+  const navigate = useNavigate();
 
   const [fuelTanks, setFuelTanks] = useState(null);
   const [columns, setColumns] = useState(null);
@@ -24,27 +37,19 @@ const FuelTankReadingList = () => {
   /* ------------------------------------------------------------------------ */
   /*                                 functions                                */
   /* ------------------------------------------------------------------------ */
+  // The backend returns: [{ _id, date, readings: [{ fuelTank, volume, ... }] }, ...]
   const formatRows = (data) => {
-    const grouped = Object.values(
-      data.reduce((acc, item) => {
-        const date = item.date.slice(0, 10); // 'YYYY-MM-DD'
-        const tankId = item.fuelTank._id;
-
-        if (!acc[date]) {
-          acc[date] = { date, readings: {} };
-        }
-
-        acc[date].readings[String(tankId)] = item.volume;
-        return acc;
-      }, {})
-    );
-
-    return grouped;
+    if (!Array.isArray(data)) return [];
+    return data.map((readingGroup) => ({
+      _id: readingGroup._id,
+      date: formatDate(readingGroup.date),
+      readings: Array.isArray(readingGroup.volumes) ? readingGroup.volumes : [],
+    }));
   };
 
   const onFetch = async (state) => {
     const { data, count } = await getAllFuelTankReadings({});
-
+    // data is expected to be an array of grouped readings from the backend
     return { rows: formatRows(data), count };
   };
 
@@ -59,17 +64,41 @@ const FuelTankReadingList = () => {
         setFuelTanks(data);
         setColumns([
           {
-            name: "Date",
-            field: "date",
+            name: 'Date',
+            field: 'date',
           },
           ...data.map((fuelTank) => {
             return {
               name: fuelTank.fuelType.name,
               customField: (row) => {
-                return formatNumberWithCommas(row.readings[fuelTank._id]);
+                // row.readings is now an array of reading objects
+                if (!Array.isArray(row.readings)) return '';
+                const found = row.readings.find((v) => {
+                  const tankId =
+                    typeof v.fuelTank === 'object'
+                      ? v.fuelTank._id
+                      : v.fuelTank;
+                  return tankId === fuelTank._id;
+                });
+                return found ? formatNumberWithCommas(found.volume) : '';
               },
             };
           }),
+          {
+            name: '',
+            customRender: (row) => {
+              // You can implement the edit logic here or pass a handler as needed
+              console.log(row);
+              return (
+                <EditButton
+                  onClick={() =>
+                    navigate(`/fuel/management/tank-reading/edit/${row._id}`)
+                  }
+                  disabled={false}
+                />
+              );
+            },
+          },
         ]);
       } catch (error) {}
     };
@@ -84,7 +113,7 @@ const FuelTankReadingList = () => {
   return (
     <div>
       {fuelTanks && columns ? (
-        <Table columns={columns} onFetch={onFetch} identifier={"date"} />
+        <Table columns={columns} onFetch={onFetch} identifier={'date'} />
       ) : (
         <Spinner />
       )}

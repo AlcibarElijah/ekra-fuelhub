@@ -1,12 +1,12 @@
 /* -------------------------------------------------------------------------- */
 /*                                   imports                                  */
 /* -------------------------------------------------------------------------- */
-import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 
 /* ---------------------------------- hooks --------------------------------- */
-import { useFuelTankService } from "../../../hooks/useFuelTankService";
-import { useFuelService } from "../../../hooks/useFuelService";
+import { useFuelTankService } from '../../../hooks/useFuelTankService';
+import { useFuelService } from '../../../hooks/useFuelService';
 
 const FuelTankForm = () => {
   const { id } = useParams();
@@ -19,10 +19,10 @@ const FuelTankForm = () => {
   } = useFuelTankService();
   const { getFuelTypes, isLoading: fuelIsLoading } = useFuelService();
 
-  const [fuelTypeId, setFuelTypeId] = useState("");
-  const [capacity, setCapacity] = useState("");
-  const [deadstock, setDeadstock] = useState("");
-  const [acceptableVariance, setAcceptableVariance] = useState("");
+  const [fuelTypeId, setFuelTypeId] = useState('');
+  const [capacity, setCapacity] = useState('');
+  const [deadstock, setDeadstock] = useState('');
+  const [acceptableVariance, setAcceptableVariance] = useState('');
 
   const [fuelTypeChoices, setFuelTypeChoices] = useState(null);
 
@@ -55,9 +55,9 @@ const FuelTankForm = () => {
   };
 
   const emptyForm = () => {
-    setCapacity("");
-    setDeadstock("");
-    setAcceptableVariance("");
+    setCapacity('');
+    setDeadstock('');
+    setAcceptableVariance('');
   };
 
   /* ------------------------------------------------------------------------ */
@@ -96,11 +96,11 @@ const FuelTankForm = () => {
 
   return (
     <div>
-      <form className="form" onSubmit={!isLoading ? handleSubmit : null}>
+      <form className='form' onSubmit={!isLoading ? handleSubmit : null}>
         <h4>Fuel Tank Form</h4>
-        <label className="form-label mt-3">Fuel Type:</label>
+        <label className='form-label mt-3'>Fuel Type:</label>
         <select
-          className="form-control"
+          className='form-control'
           value={fuelTypeId}
           onChange={(e) => setFuelTypeId(e.target.value)}
           disabled={isLoading}
@@ -112,28 +112,28 @@ const FuelTankForm = () => {
               </option>
             ))}
         </select>
-        <label className="form-label mt-3">Capacity:</label>
+        <label className='form-label mt-3'>Capacity:</label>
         <input
-          type="number"
-          className="form-control"
+          type='number'
+          className='form-control'
           value={capacity}
           onChange={(e) => setCapacity(e.target.value)}
         />
-        <label className="form-label mt-3">Deadstock:</label>
+        <label className='form-label mt-3'>Deadstock:</label>
         <input
-          type="number"
-          className="form-control"
+          type='number'
+          className='form-control'
           value={deadstock}
           onChange={(e) => setDeadstock(e.target.value)}
         />
-        <label className="form-label mt-3">Acceptable Variance:</label>
+        <label className='form-label mt-3'>Acceptable Variance:</label>
         <input
-          type="number"
-          className="form-control"
+          type='number'
+          className='form-control'
           value={acceptableVariance}
           onChange={(e) => setAcceptableVariance(e.target.value)}
         />
-        <button className="btn btn-primary mt-3" disabled={isLoading}>
+        <button className='btn btn-primary btn-sm mt-3' disabled={isLoading}>
           Submit
         </button>
       </form>

@@ -1,58 +1,58 @@
 /* -------------------------------------------------------------------------- */
 /*                                   imports                                  */
 /* -------------------------------------------------------------------------- */
-import { formatDate } from "../../../functions/utils";
+import { formatDate } from '../../../functions/utils';
 
 /* ---------------------------------- hooks --------------------------------- */
-import { useEmployeeService } from "../../../hooks/useEmployeeService";
-import { useNavigate } from "react-router-dom";
+import { useEmployeeService } from '../../../hooks/useEmployeeService';
+import { useNavigate } from 'react-router-dom';
 
 /* ------------------------------- components ------------------------------- */
-import Table from "../../../components/table/Table";
+import Table from '../../../components/table/Table';
 
 const EmployeeList = () => {
   const navigate = useNavigate();
 
   const columns = [
     {
-      name: "First Name",
-      field: "firstName",
+      name: 'First Name',
+      field: 'firstName',
       sortable: true,
     },
     {
-      name: "Last Name",
-      field: "lastName",
+      name: 'Last Name',
+      field: 'lastName',
       sortable: true,
     },
     {
-      name: "Position",
+      name: 'Position',
       customField: (row) => row.position.name,
     },
     {
-      name: "Day Off",
-      field: "dayOff",
+      name: 'Day Off',
+      field: 'dayOff',
     },
     {
-      name: "Birthday",
+      name: 'Birthday',
       customField: (row) => formatDate(row.birthday),
     },
     {
-      name: "Date Started",
+      name: 'Date Started',
       customField: (row) => formatDate(row.dateStarted),
     },
     {
-      name: "",
+      name: '',
       customRender: (row) => {
         return (
           <button
-            className="btn btn-primary"
+            className='btn btn-primary btn-sm'
             onClick={() => navigate(`/employee/management/edit/${row._id}`)}
           >
             Edit
           </button>
         );
       },
-      className: "text-end",
+      className: 'text-end',
     },
   ];
 

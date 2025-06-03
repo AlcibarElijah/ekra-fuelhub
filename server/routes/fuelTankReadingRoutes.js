@@ -1,22 +1,19 @@
 /* -------------------------------------------------------------------------- */
 /*                                  requires                                  */
 /* -------------------------------------------------------------------------- */
-const express = require("express");
+const express = require('express');
 
 /* ------------------------------- controllers ------------------------------ */
 const {
-  createFuelTankReading,
-  batchCreateFuelTankReadings,
-  getAllFuelTankReadings,
-  getSingleFuelTankReading,
+  createFuelTankReadings,
+  getFuelTankReadings,
+  getFuelTankReading,
   updateFuelTankReading,
   deleteFuelTankReading,
-} = require("../controllers/fuelTankReadingController");
+} = require('../controllers/fuelTankReadingController');
 
 /* ------------------------------- middleware ------------------------------- */
-const {
-  isUserAuthenticated,
-} = require("../middlewares/authMiddleware");
+const { isUserAuthenticated } = require('../middlewares/authMiddleware');
 
 /* -------------------------------------------------------------------------- */
 /*                                  variables                                 */
@@ -31,12 +28,11 @@ router.use(isUserAuthenticated);
 /* -------------------------------------------------------------------------- */
 /*                                   routes                                   */
 /* -------------------------------------------------------------------------- */
-router.post("/batch", batchCreateFuelTankReadings);
-router.post("/", createFuelTankReading);
-router.get("/", getAllFuelTankReadings);
-router.get("/:id", getSingleFuelTankReading);
-router.put("/:id", updateFuelTankReading);
-router.delete("/:id", deleteFuelTankReading);
+router.post('/', createFuelTankReadings);
+router.get('/', getFuelTankReadings);
+router.get('/:id', getFuelTankReading);
+router.put('/:id', updateFuelTankReading);
+router.delete('/:id', deleteFuelTankReading);
 
 /* -------------------------------------------------------------------------- */
 /*                                   export                                   */

@@ -1,50 +1,50 @@
 /* -------------------------------------------------------------------------- */
 /*                                   imports                                  */
 /* -------------------------------------------------------------------------- */
-import { useUserService } from "../../../hooks/useUserService";
-import { useNavigate } from "react-router-dom";
+import { useUserService } from '../../../hooks/useUserService';
+import { useNavigate } from 'react-router-dom';
 
 /* ------------------------------- components ------------------------------- */
-import Table from "../../../components/table/Table";
+import Table from '../../../components/table/Table';
 
 const UserList = () => {
   const navigate = useNavigate();
 
   const columns = [
     {
-      name: "First Name",
-      field: "firstName",
+      name: 'First Name',
+      field: 'firstName',
       sortable: true,
     },
     {
-      name: "Last Name",
-      field: "lastName",
+      name: 'Last Name',
+      field: 'lastName',
       sortable: true,
     },
     {
-      name: "Username",
-      field: "username",
+      name: 'Username',
+      field: 'username',
       sortable: true,
     },
     {
-      name: "Role",
+      name: 'Role',
       customField: (row) => {
         return row.role.name;
       },
     },
     {
-      name: "",
+      name: '',
       customRender: (row) => {
         return (
           <button
-            className="btn btn-primary"
+            className='btn btn-primary btn-sm'
             onClick={() => navigate(`/account/management/edit/${row._id}`)}
           >
             Edit
           </button>
         );
       },
-      className: "text-end",
+      className: 'text-end',
     },
   ];
 
