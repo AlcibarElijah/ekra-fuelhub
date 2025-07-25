@@ -1,27 +1,28 @@
 /* -------------------------------------------------------------------------- */
 /*                                   imports                                  */
 /* -------------------------------------------------------------------------- */
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 /* ---------------------------------- pages --------------------------------- */
-import Login from "./pages/login/Login";
-import AccountSettings from "./pages/accountManagement/AccountSettings";
-import UpdatePassword from "./pages/accountManagement/UpdatePassword";
-import AccountManagement from "./pages/accountManagement/AccountManagement";
-import NotFound from "./pages/NotFound";
-import FuelManagement from "./pages/fuelManagement/FuelManagement";
-import FuelTankManagement from "./pages/fuelTankManagement/FuelTankManagement";
-import FuelTankReadingManagement from "./pages/fuelTankReadingManagement/FuelTankReadingManagement";
-import PositionManagement from "./pages/positionManagement/PositionManagement";
-import EmployeeManagement from "./pages/employeeManagement/EmployeeManagement";
+import Login from './pages/login/Login';
+import AccountSettings from './pages/accountManagement/AccountSettings';
+import UpdatePassword from './pages/accountManagement/UpdatePassword';
+import AccountManagement from './pages/accountManagement/AccountManagement';
+import NotFound from './pages/NotFound';
+import FuelManagement from './pages/fuelManagement/FuelManagement';
+import FuelTankManagement from './pages/fuelTankManagement/FuelTankManagement';
+import FuelTankReadingManagement from './pages/fuelTankReadingManagement/FuelTankReadingManagement';
+import PositionManagement from './pages/positionManagement/PositionManagement';
+import EmployeeManagement from './pages/employeeManagement/EmployeeManagement';
+import FuelDeliveryManagement from './pages/fuelDeliveryManagement/FuelDeliveryManagement';
 
 /* ------------------------------- components ------------------------------- */
-import Navbar from "./components/nav/Navbar";
+import Navbar from './components/nav/Navbar';
 
 /* -------------------------------- contexts -------------------------------- */
-import { useAuthContext } from "./hooks/useAuthContext";
+import { useAuthContext } from './hooks/useAuthContext';
 
 function App() {
   const { user, isLoading: isUserLoading } = useAuthContext();
@@ -29,22 +30,22 @@ function App() {
   if (isUserLoading) return;
 
   return (
-    <div className="App mb-3">
+    <div className='App mb-3'>
       <BrowserRouter>
         {!user && <Login />}
         {user && (
           <>
             <Navbar />
             <Routes>
-              <Route path="/account/settings" element={<AccountSettings />} />
+              <Route path='/account/settings' element={<AccountSettings />} />
               <Route
-                path="/account/update-password"
+                path='/account/update-password'
                 element={<UpdatePassword />}
               />
               <Route
-                path="/account/management/*"
+                path='/account/management/*'
                 element={
-                  user.role.name === "admin" ? (
+                  user.role.name === 'admin' ? (
                     <AccountManagement />
                   ) : (
                     <NotFound />
@@ -53,25 +54,29 @@ function App() {
               />
 
               <Route
-                path="/fuel/management/tank/*"
+                path='/fuel/management/tank/*'
                 element={<FuelTankManagement />}
               />
               <Route
-                path="/fuel/management/tank-reading/*"
+                path='/fuel/management/tank-reading/*'
                 element={<FuelTankReadingManagement />}
               />
-              <Route path="/fuel/management/*" element={<FuelManagement />} />
+              <Route path='/fuel/management/*' element={<FuelManagement />} />
+              <Route
+                path='/fuel/delivery/*'
+                element={<FuelDeliveryManagement />}
+              />
 
               <Route
-                path="/employee/management/position/*"
+                path='/employee/management/position/*'
                 element={<PositionManagement />}
               />
               <Route
-                path="/employee/management/*"
+                path='/employee/management/*'
                 element={<EmployeeManagement />}
               />
 
-              <Route path="*" element={<NotFound />} />
+              <Route path='*' element={<NotFound />} />
             </Routes>
           </>
         )}

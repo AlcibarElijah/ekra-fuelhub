@@ -1,16 +1,25 @@
-import { format } from "date-fns";
+import { format } from 'date-fns';
 
 export const formatNumberWithCommas = (number) => {
-  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+};
+
+export const formatNumberWithCommasAndDecimals = (number, decimals = 2) => {
+  const formattedNumber = parseFloat(number).toFixed(decimals);
+  return formattedNumber.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
 
 export const formatDate = (date) => {
-  const formattedDate = format(new Date(date), "dd MMM yyyy");
+  const formattedDate = format(new Date(date), 'dd MMM yyyy');
   return formattedDate;
 };
 
+export const getDayFromDate = (date) => {
+  return format(new Date(date), 'EEEE');
+};
+
 export const formatDateToInputReadableString = (date) => {
-  const formattedDate = format(new Date(date), "yyyy-MM-dd");
+  const formattedDate = format(new Date(date), 'yyyy-MM-dd');
   return formattedDate;
 };
 
@@ -26,7 +35,7 @@ export const isValidDate = (dateInput) => {
 export const filterObjectWithValues = (obj) => {
   return Object.fromEntries(
     Object.entries(obj).filter(
-      ([_, value]) => value !== "" && value !== null && value !== undefined
+      ([_, value]) => value !== '' && value !== null && value !== undefined
     )
   );
 };

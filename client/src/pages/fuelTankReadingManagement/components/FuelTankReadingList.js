@@ -87,8 +87,6 @@ const FuelTankReadingList = () => {
           {
             name: '',
             customRender: (row) => {
-              // You can implement the edit logic here or pass a handler as needed
-              console.log(row);
               return (
                 <EditButton
                   onClick={() =>

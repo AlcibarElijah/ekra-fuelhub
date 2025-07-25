@@ -9,12 +9,12 @@
  * @returns
  */
 export const buildQueryParams = (params) => {
-  const { filters = {}, sort = {}, ...others } = params;
+  const { filters = {}, sort = null, ...others } = params;
 
   const queryParams = {
     ...others,
     ...(filters || {}),
-    ...(sort != null ? { sort } : {}),
+    ...(sort !== null ? { sort } : null),
   };
 
   const queryString = new URLSearchParams(queryParams).toString();

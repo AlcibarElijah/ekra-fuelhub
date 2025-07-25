@@ -161,8 +161,6 @@ const updateFuelTankReadingVolumes = async (id, date, fuelTankReadings) => {
       )
     );
 
-    console.log(fuelTankReadings);
-
     // Update all volumes in parallel
     newFuelTankReadingVolumes = await Promise.all(
       fuelTankReadings.map(
@@ -177,8 +175,6 @@ const updateFuelTankReadingVolumes = async (id, date, fuelTankReadings) => {
           )
       )
     );
-
-    console.log('newFuelTankReadingVolumes', newFuelTankReadingVolumes);
 
     return {
       ...updatedFuelTankReading.toObject(),

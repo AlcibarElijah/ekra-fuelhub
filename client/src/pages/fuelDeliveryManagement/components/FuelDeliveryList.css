@@ -1,0 +1,33 @@
+/* Custom styles for Fuel Delivery Calendar */
+.fuel-delivery-calendar .custom-event {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  width: 100%;
+}
+
+.fuel-delivery-calendar .event-icon {
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.fuel-delivery-calendar .event-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Additional styling for the calendar in this context */
+.fuel-delivery-calendar {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.fuel-delivery-calendar .calendar-day:hover {
+  background: #f1f3f4;
+}
+
+.fuel-delivery-calendar .event:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}

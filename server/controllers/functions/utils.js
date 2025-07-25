@@ -1,7 +1,7 @@
 /* -------------------------------------------------------------------------- */
 /*                                  requires                                  */
 /* -------------------------------------------------------------------------- */
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 /* -------------------------------------------------------------------------- */
 /*                                  functions                                 */
@@ -15,7 +15,7 @@ const mongoose = require("mongoose");
  */
 module.exports.handleError = (errorMessage, error, res) => {
   console.error(errorMessage, error);
-  res.status(500).json({
+  res.status(error.statusCode || 500).json({
     message: errorMessage,
   });
 };
@@ -33,10 +33,10 @@ module.exports.handleError = (errorMessage, error, res) => {
 module.exports.validateExistingRecord = async (model, id) => {
   try {
     /* ----------------------------- validations ---------------------------- */
-    if (!model || !id) throw new Error("Invalid parameters.");
+    if (!model || !id) throw new Error('Invalid parameters.');
 
     // check id is valid
-    if (!mongoose.Types.ObjectId.isValid(id)) throw new Error("Invalid id.");
+    if (!mongoose.Types.ObjectId.isValid(id)) throw new Error('Invalid id.');
 
     // check if record exists
     const record = await model.findById(id);
@@ -45,7 +45,7 @@ module.exports.validateExistingRecord = async (model, id) => {
 
     return {
       statusCode: 200,
-      message: "Record found.",
+      message: 'Record found.',
       data: record,
     };
   } catch (error) {
@@ -60,22 +60,22 @@ module.exports.validateExistingRecord = async (model, id) => {
 /* -------- converts filter to something mongoose can read and filter ------- */
 /**
  * Converts filter to something mongoose can read and filter
- * 
+ *
  * @param {object} filter - An object of filters to be converted
  * @returns { object } - mongoose readable filter
  */
 module.exports.buildFilter = (filter) => {
   return Object.fromEntries(
     Object.entries(filter)
-      .filter(([_, value]) => value != null && value !== "")
-      .map(([key, value]) => [key, { $regex: new RegExp(value, "i") }])
+      .filter(([_, value]) => value != null && value !== '')
+      .map(([key, value]) => [key, { $regex: new RegExp(value, 'i') }])
   );
 };
 
 /* ------ convert sort object to something mongoose can read and sort ------- */
 /**
  * Converts sort to something mongoose can read and sort
- * 
+ *
  * @param {object} sort - An object of sorts to be converted
  * @returns { object } - mongoose readable sort
  */
@@ -83,14 +83,14 @@ module.exports.buildSort = (sort, direction) => {
   if (!sort || !direction) return {};
 
   return {
-    [sort]: direction === "asc" ? 1 : -1,
+    [sort]: direction === 'asc' ? 1 : -1,
   };
 };
 
 /* -------------------- removes password from user object ------------------- */
 /**
  * Removes password from user object
- * 
+ *
  * @param {object} user - user object
  * @returns user object with no password
  */
@@ -103,7 +103,7 @@ module.exports.cleanedUser = (user) => {
 /* ------------------------- check if date is valid ------------------------- */
 /**
  * Check if the date is a valid date
- * 
+ *
  * @param {string|number} dateInput - The date to be checked
  * @return {boolean} whether or not the date is valid
  */
@@ -111,11 +111,11 @@ module.exports.isValidDate = (dateInput) => {
   const date = new Date(dateInput);
 
   // check if date is valid
-  if(isNaN(date.getTime())) return false;
+  if (isNaN(date.getTime())) return false;
 
   return true;
-}
+};
 
 module.exports.isValidNumber = (number) => {
-  return !(number === "" || isNaN(Number(number)) || number === null);
-}
+  return !(number === '' || isNaN(Number(number)) || number === null);
+};

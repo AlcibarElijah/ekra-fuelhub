@@ -1,33 +1,45 @@
-import js from "@eslint/js";
-import globals from "globals";
-import pluginReact from "eslint-plugin-react";
-import { defineConfig } from "eslint/config";
+import js from '@eslint/js';
+import globals from 'globals';
+import pluginReact from 'eslint-plugin-react';
 
-export default defineConfig([
+export default [
+  js.configs.recommended,
   {
-    files: ["**/*.{js,mjs,cjs,jsx}"],
+    files: ['**/*.{js,mjs,cjs,jsx}'],
     languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
       globals: {
         ...globals.browser,
+        ...globals.node,
+      },
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
       },
     },
     plugins: {
-      js,
       react: pluginReact,
     },
     rules: {
-      ...js.configs.recommended.rules,
       ...pluginReact.configs.recommended.rules,
-      "no-unused-vars": [
-        "error",
+      'no-unused-vars': [
+        'error',
         {
-          varsIgnorePattern: "^_",
-          argsIgnorePattern: "^_",
-          caughtErrorsIgnorePattern: "^_",
+          varsIgnorePattern: '^_',
+          argsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
         },
       ],
-      "no-undef": "error",
-      "react/react-in-jsx-scope": "off", // For React 17+
+      'no-undef': 'error',
+      'react/react-in-jsx-scope': 'off', // For React 17+
+      'react/prop-types': 'off', // Disable prop-types if you're using TypeScript or don't want it
+    },
+    settings: {
+      react: {
+        version: 'detect',
+      },
     },
   },
-]);
+];

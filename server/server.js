@@ -1,21 +1,22 @@
 /* -------------------------------------------------------------------------- */
 /*                                  requires                                  */
 /* -------------------------------------------------------------------------- */
-require("dotenv").config();
-const express = require("express");
-const morgan = require("morgan");
-const mongoose = require("mongoose");
-const cors = require("cors");
+require('dotenv').config();
+const express = require('express');
+const morgan = require('morgan');
+const mongoose = require('mongoose');
+const cors = require('cors');
 
 /* --------------------------------- routes --------------------------------- */
-const roleRoutes = require("./routes/roleRoutes");
-const fuelRoutes = require("./routes/fuelRoutes");
-const fuelTankRoutes = require("./routes/fuelTankRoutes");
-const fuelTankReadingRoutes = require("./routes/fuelTankReadingRoutes");
-const userRoutes = require("./routes/userRoutes");
-const authRoutes = require("./routes/authRoutes");
-const positionRoutes = require("./routes/positionRoutes");
-const employeeRoutes = require("./routes/employeeRoutes");
+const roleRoutes = require('./routes/roleRoutes');
+const fuelRoutes = require('./routes/fuelRoutes');
+const fuelTankRoutes = require('./routes/fuelTankRoutes');
+const fuelTankReadingRoutes = require('./routes/fuelTankReadingRoutes');
+const userRoutes = require('./routes/userRoutes');
+const authRoutes = require('./routes/authRoutes');
+const positionRoutes = require('./routes/positionRoutes');
+const employeeRoutes = require('./routes/employeeRoutes');
+const fuelDeliveryRoutes = require('./routes/fuelDeliveryRoutes');
 
 /* -------------------------------------------------------------------------- */
 /*                                  variables                                 */
@@ -27,8 +28,8 @@ const MONGO_URI = process.env.MONGO_URI;
 /* ------------------------------- express app ------------------------------ */
 const app = express();
 const allowedOrigins = [
-  "http://localhost:3000", // Dev
-  "https://ekra-fuelhub-frontend.onrender.com", // Production
+  'http://localhost:3000', // Dev
+  'https://ekra-fuelhub-frontend.onrender.com', // Production
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -44,36 +45,37 @@ app.use(
 mongoose
   .connect(MONGO_URI)
   .then(() => {
-    console.log("Connected to the database.");
+    console.log('Connected to the database.');
     app.listen(PORT, () => {
-      console.log("Server running on port", PORT);
+      console.log('Server running on port', PORT);
     });
   })
   .catch((err) => {
-    console.error("There was an error connecting to the database.", err);
+    console.error('There was an error connecting to the database.', err);
   });
 
 /* -------------------------------------------------------------------------- */
 /*                                 middleware                                 */
 /* -------------------------------------------------------------------------- */
-app.use(morgan("dev")); // log requests to the console
+app.use(morgan('dev')); // log requests to the console
 
 app.use(express.json()); // parse JSON request bodies
 
 /* -------------------------------------------------------------------------- */
 /*                                   routes                                   */
 /* -------------------------------------------------------------------------- */
-app.use("/api/roles", roleRoutes);
-app.use("/api/fuels", fuelRoutes);
-app.use("/api/fuel-tanks", fuelTankRoutes);
-app.use("/api/fuel-tank-readings", fuelTankReadingRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/positions", positionRoutes);
-app.use("/api/employees", employeeRoutes);
+app.use('/api/roles', roleRoutes);
+app.use('/api/fuels', fuelRoutes);
+app.use('/api/fuel-tanks', fuelTankRoutes);
+app.use('/api/fuel-tank-readings', fuelTankReadingRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/positions', positionRoutes);
+app.use('/api/employees', employeeRoutes);
+app.use('/api/fuel-delivery', fuelDeliveryRoutes);
 
-app.get("/", (req, res) => {
+app.get('/', (req, res) => {
   return res.status(200).json({
-    message: "Service working as expected"
-  })
-})
+    message: 'Service working as expected',
+  });
+});
